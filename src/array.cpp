@@ -284,6 +284,15 @@ Array::value_type Array::sum(void) const{
     return std::accumulate(this->m_data.begin(), this->m_data.end(), 0.0);
 }
 
+// -
+Array::value_type Array::min(void) const{
+    if(this->empty()){
+        throw ParsevalError("`min` is undefined for an empty array");
+    }
+
+    return *std::min_element(this->m_data.begin(), this->m_data.end());
+}
+
 /*
 class Array{
 public:
@@ -292,7 +301,7 @@ public:
 
 
 
-Array::value_type Array::min(void) const{}
+
 Array::value_type Array::max(void) const{}
 
 Array Array::operator+(const Array& other) const;
