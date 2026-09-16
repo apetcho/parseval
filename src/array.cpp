@@ -212,6 +212,13 @@ Array::value_type& Array::operator()(Indices... indices){
     });
 }
 
+// -
+template<typename... Indices>
+const Array::value_type& Array::operator()(Indices... indices) const{
+    return this->at(Array::Shape{
+        static_cast<std::size_t>(indices)...
+    });
+}
 
 /*
 class Array{
@@ -219,9 +226,6 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-template<typename... Indices>
-const Array::value_type& Array::operator()(Indices... indices) const;
 
 Array Array::reshape(const Shape& myNewShape) const;
 Array Array::transpose(void) const;
