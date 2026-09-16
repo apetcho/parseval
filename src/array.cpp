@@ -477,6 +477,22 @@ Array& Array::operator/=(value_type scalar){
     return *this;
 }
 
+// -
+bool Array::is_close(const Array& other, value_type tolerance) const{
+    if(this->m_shape != other.m_shape){
+        return false;
+    }
+
+    for(std::size_t i=0; i < this->size(); ++i){
+        if(std::abs(this->m_data[i] - other.m_data[i]) > tolerance){
+            return tolerance;
+        }
+    }
+
+    return true;
+}
+
+
 
 /*
 class Array{
@@ -484,7 +500,7 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-bool Array::is_close(const Array& other, value_type tolerance) const{}
+
 
 // friends
 Array operator+(value_type scalar, const Array& rhs);
