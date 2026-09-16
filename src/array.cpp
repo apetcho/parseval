@@ -153,6 +153,11 @@ std::size_t Array::ndim(void) const noexcept{
     return this->m_shape.size();
 }
 
+// -
+const Array::Shape& Array::shape(void) const noexcept{
+    return this->m_shape;
+}
+
 
 /*
 class Array{
@@ -161,9 +166,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-
-const Shape& Array::shape(void) const noexcept;
 const Shape& Array::stride(void) const noexcept;
 std::size_t Array::size(void) const noexcept;
 bool Array::empty(void) const noexcept;
