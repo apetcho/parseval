@@ -204,6 +204,15 @@ const Array::value_type& Array::at(const Shape& indices) const{
     return this->m_data[this->offset(indices)];
 }
 
+// -
+template<typename... Indices>
+Array::value_type& Array::operator()(Indices... indices){
+    return this->at(Array::Shape{
+        static_cast<std::size_t>(indices)...
+    });
+}
+
+
 /*
 class Array{
 public:
@@ -212,10 +221,7 @@ public:
 
 
 template<typename... Indices>
-value_type& operator()(Indices... indices);
-
-template<typename... Indices>
-const value_type& Array::operator()(Indices... indices) const;
+const Array::value_type& Array::operator()(Indices... indices) const;
 
 Array Array::reshape(const Shape& myNewShape) const;
 Array Array::transpose(void) const;
