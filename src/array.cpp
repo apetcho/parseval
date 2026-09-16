@@ -293,6 +293,15 @@ Array::value_type Array::min(void) const{
     return *std::min_element(this->m_data.begin(), this->m_data.end());
 }
 
+// -
+Array::value_type Array::max(void) const{
+    if(this->empty()){
+        throw ParsevalError("`min` is undefined for an empty array");
+    }
+
+    return *std::max_element(this->m_data.begin(), this->m_data.end());
+}
+
 /*
 class Array{
 public:
@@ -300,9 +309,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-
-Array::value_type Array::max(void) const{}
 
 Array Array::operator+(const Array& other) const;
 Array Array::operator-(const Array& other) const;
