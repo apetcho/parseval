@@ -465,17 +465,24 @@ Array& Array::operator*=(value_type scalar){
     return *this;
 }
 
+// -
+Array& Array::operator/=(value_type scalar){
+    if(scalar == 0.0){
+        throw ParsevalError("Division by zero");
+    }
+    for(auto& value: this->m_data){
+        value *= scalar;
+    }
+
+    return *this;
+}
+
 
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
-
-
-
-
-Array& Array::operator/=(value_type scalar){}
 
 bool Array::is_close(const Array& other, value_type tolerance) const{}
 
