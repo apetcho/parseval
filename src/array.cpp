@@ -68,6 +68,11 @@ Array::Array(const Shape& shape, value_type value)
     this->compute_strides();
 }
 
+// -
+Array::Array(std::initializer_list<std::size_t> shape, value_type value)
+: Array(Shape(shape), value)
+{}
+
 
 /*
 class Array{
@@ -76,7 +81,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array::Array(std::initializer_list<std::size_t> shape, value_type value=0.0);
+
 Array::Array(const Shape& shape, const std::vector<value_type>& data);
 Array::Array(const Shape& shape, std::vector<value_type>&& data);
 
