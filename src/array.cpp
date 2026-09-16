@@ -98,6 +98,13 @@ Array::Array(const Shape& shape, std::vector<value_type>&& data)
     this->compute_strides();
 }
 
+// --------------------------------
+// - Factory methods return Array -
+// --------------------------------
+Array Array::zeros(const Shape& shape){
+    return Array(shape, 0.0);
+}
+
 
 /*
 class Array{
@@ -106,9 +113,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-// - static methods return Array
-Array Array::zeros(const Shape& shape);
 Array Array::ones(const Shape& shape);
 Array Array::identity(size_t n);
 Array Array::full(const Shape& shape, value_type value);
