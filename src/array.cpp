@@ -22,6 +22,17 @@ std::size_t Array::product(const Shape& shape){
     );
 }
 
+//
+void Array::compute_strides(void){
+    this->m_strides.assign(this->m_shape.size(), 1);
+
+    if(this->m_shape.empty()){ return; }
+
+    for(std::size_t i=this->m_shape.size()-1; i > 0; --i){
+        this->m_strides[i-1] = this->m_strides[i] * this->m_shape[i];
+    }
+}
+
 /*
 class Array{
 public:
@@ -196,7 +207,7 @@ private:
     std::map<std::string, std::string> m_attributes; // Key-value pairs for metadata
 
 
-void Array::compute_strides(void);
+
 std::size_t Array::offset(const Shape& indices) const;
 void Array::validate_same_shape(const Array& other) const;
 
