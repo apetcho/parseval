@@ -163,6 +163,10 @@ const Array::Shape& Array::stride(void) const noexcept{
     return this->m_strides;
 }
 
+// -
+std::size_t Array::size(void) const noexcept{
+    return this->m_data.size();
+}
 
 /*
 class Array{
@@ -172,7 +176,7 @@ public:
 
 
 
-std::size_t Array::size(void) const noexcept;
+
 bool Array::empty(void) const noexcept;
 const std::vector<value_type>& Array::data(void) const noexcept;
 std::vector<value_type>& Array::data(void) noexcept;
