@@ -1,5 +1,5 @@
 #include "parseval/core/thread_pool.hpp"
-
+#include "parseval/core/array.hpp"          // for ParsevalError
 
 // --------------------------------------------------------------------
 // -*- begin::namespace::parseval                                   -*-
@@ -37,16 +37,41 @@ std::size_t ThreadPool::size(void) const noexcept{
     return this->m_workers.size();
 }
 
-/*
-class ThreadPool{
-public:
-
-
+// -
 template<typename Function, typename... Args>
 auto ThreadPool::submit(
     Function&& function,
     Args&&... args
-) -> std::future<std::invoke_result_t<Function, Args...>>;
+) -> std::future<std::invoke_result_t<Function, Args...>>{
+    // -
+    using Result = std::invoke_result_t<Function, Args...>;
+
+    auto task = std::make_shared<std::packaged_task<Result()>(
+        std::bind(
+            std::forward<Function>(function),
+            std::forward<Args>(args)...
+        )
+    );
+
+    std::future<Result> result = task->get_fugure();
+    {
+        std::lock_guard<std::mutex> lock(this->m_mutex);
+        if(this->m_stopping){
+            throw ParsevalError("Cannot submit work to a stopped ThreadPool");
+        }
+
+        this->m_tasks.emplace([task](){
+            (*task)();
+        });
+    }
+
+    this->m_condition.notify_one();
+    return result;
+}
+
+/*
+class ThreadPool{
+public:
 
 
 private:
