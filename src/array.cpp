@@ -324,6 +324,16 @@ Array Array::operator-(const Array& other) const{
     return result;
 }
 
+// -
+Array Array::operator*(const Array& other) const{
+    this->validate_same_shape(other);
+    Array result(this->m_shape);
+    for(std::size_t i=0; i < this->size(); ++i){
+        result.m_data[i] = this->m_data[i] * other.m_data[i];
+    }
+
+    return result;
+}
 
 /*
 class Array{
@@ -331,8 +341,6 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-Array Array::operator*(const Array& other) const{}
 Array Array::operator/(const Array& other) const{}
 
 Array Array::operator+(value_type scalar) const{}
