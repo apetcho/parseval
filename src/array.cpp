@@ -122,15 +122,17 @@ Array Array::identity(size_t n){
     return result;
 }
 
+// -
+Array Array::full(const Shape& shape, value_type value){
+    return Array(shape, value);
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-
-Array Array::full(const Shape& shape, value_type value);
 Array Array::arange(value_type start, value_type stop, value_type step=1.0);
 
 std::size_t Array::ndim(void) const noexcept;
