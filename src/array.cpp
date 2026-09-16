@@ -85,6 +85,20 @@ Array::Array(const Shape& shape, const std::vector<value_type>& data)
     this->compute_strides();
 }
 
+
+// -
+Array::Array(const Shape& shape, std::vector<value_type>&& data)
+: m_shape(shape)
+, m_data(std::move(data))
+{
+    if(this->m_data.size() != this->product(this->m_shape)){
+        throw ParsevalError("Data size does not match array shape");
+    }
+
+    this->compute_strides();
+}
+
+
 /*
 class Array{
 public:
@@ -92,9 +106,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-
-Array::Array(const Shape& shape, std::vector<value_type>&& data);
 
 // - static methods return Array
 Array Array::zeros(const Shape& shape);
