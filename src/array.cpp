@@ -168,6 +168,13 @@ std::size_t Array::size(void) const noexcept{
     return this->m_data.size();
 }
 
+
+// -
+bool Array::empty(void) const noexcept{
+    return this->m_data.empty();
+}
+
+
 /*
 class Array{
 public:
@@ -175,9 +182,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-
-bool Array::empty(void) const noexcept;
 const std::vector<value_type>& Array::data(void) const noexcept;
 std::vector<value_type>& Array::data(void) noexcept;
 const value_type* Array::raw_data(void) const noexcept;
