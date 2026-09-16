@@ -3,7 +3,7 @@
 #include<map>
 #include<vector>
 #include<string>
-#include<exception>
+#include<stdexcept>
 #include<iostream>
 #include<initializer_list>
 
@@ -22,8 +22,19 @@
 namespace parseval{
 // -
 
-class ParsevalError : public std::exception{
-    //! @todo
+class ParsevalError : public std::runtime_error{
+public:
+    ParsevalError()
+    : std::runtime_error("ParsevalError: unknown error caugth")
+    {}
+
+    explicit ParsevalError(const char* msg)
+    : std::runtime_error(std::string("ParsevalError: ") + msg)
+    {}
+
+    explicit ParsevalError(const std::string& msg)
+    : ParsevalError(msg.c_str())
+    {}
 };
 
 class Array{
@@ -149,8 +160,8 @@ public:
     Array abs(void) const;
 
 
-    Array map_unary(auto&& fn) const;
-    Array map_binary(const Array& other, auto&& fn) const;
+    Array map(auto&& fn) const;
+    Array map(const Array& other, auto&& fn) const;
     Array any(int axis=-1) const;
     Array all(int axis=-1) const;
     // Apply a function to each element; returns same shape
