@@ -33,6 +33,26 @@ void Array::compute_strides(void){
     }
 }
 
+//
+std::size_t Array::offset(const Shape& indices) const{
+    if(indices.size() != this->m_shape.size()){
+        throw ParsevalError("Number of idinces must match array rank");
+    }
+
+    std::size_t result = 0;
+    for(std::size_t i=0; i < indices.size(); ++i){
+        if(indices[i] >= this->m_shape[i]){
+            throw ParsevalError("Array index out of bounds");
+        }
+
+        result += indices[i] * this->m_strides[i];
+    }
+
+    return result;
+}
+
+
+
 /*
 class Array{
 public:
@@ -208,7 +228,7 @@ private:
 
 
 
-std::size_t Array::offset(const Shape& indices) const;
+
 void Array::validate_same_shape(const Array& other) const;
 
 
