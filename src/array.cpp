@@ -184,13 +184,17 @@ std::vector<Array::value_type>& Array::data(void) noexcept{
     return this->m_data;
 }
 
+const Array::value_type* Array::raw_data(void) const noexcept{
+    return this->m_data.data();
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-const value_type* Array::raw_data(void) const noexcept;
+
 value_type* Array::raw_data(void) noexcept;
 value_type& Array::at(const Shape& indices);
 const value_type& Array::at(const Shape& indices) const;
