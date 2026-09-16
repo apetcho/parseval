@@ -199,14 +199,17 @@ Array::value_type& Array::at(const Shape& indices){
     return this->m_data[this->offset(indices)];
 }
 
+// -*-
+const Array::value_type& Array::at(const Shape& indices) const{
+    return this->m_data[this->offset(indices)];
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-const value_type& Array::at(const Shape& indices) const;
 
 template<typename... Indices>
 value_type& operator()(Indices... indices);
