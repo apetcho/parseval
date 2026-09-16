@@ -51,6 +51,13 @@ std::size_t Array::offset(const Shape& indices) const{
     return result;
 }
 
+// -
+void Array::validate_same_shape(const Array& other) const{
+    if(this->m_shape != other.m_shape){
+        throw ParsevalError("Elementwise operation requires equal shapes");
+    }
+}
+
 
 
 /*
@@ -227,9 +234,6 @@ private:
     std::map<std::string, std::string> m_attributes; // Key-value pairs for metadata
 
 
-
-
-void Array::validate_same_shape(const Array& other) const;
 
 
     static constexpr std::size_t parallel_threshold = 4096;
