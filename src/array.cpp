@@ -340,7 +340,9 @@ Array Array::operator/(const Array& other) const{
     this->validate_same_shape(other);
     Array result(this->m_shape);
     for(std::size_t i=0; i < this->size(); ++i){
-        if(other.m_data[i] == 0.0){}
+        if(other.m_data[i] == 0.0){
+            throw ParsevalError("Division by zero");
+        }
         result.m_data[i] = this->m_data[i] / other.m_data[i];
     }
 
