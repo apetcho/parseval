@@ -148,6 +148,11 @@ Array Array::arange(value_type start, value_type stop, value_type step){
     return Array({values.size()}, std::move(values));
 }
 
+// -
+std::size_t Array::ndim(void) const noexcept{
+    return this->m_shape.size();
+}
+
 
 /*
 class Array{
@@ -157,7 +162,7 @@ public:
 
 
 
-std::size_t Array::ndim(void) const noexcept;
+
 const Shape& Array::shape(void) const noexcept;
 const Shape& Array::stride(void) const noexcept;
 std::size_t Array::size(void) const noexcept;
