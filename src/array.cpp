@@ -516,16 +516,29 @@ Array operator/(Array::value_type scalar, const Array& rhs){
     return Array::full(rhs.shape(), scalar) / rhs;
 }
 
+// -
+std::ostream& operator<<(std::ostream& stream, const Array& array){
+    stream << "Array(shape=[";
+    for(std::size_t i=0; i < array.m_shape.size(); ++i){
+        if(i > 0){ stream << ", "; }
+        stream << array.m_shape[i];
+    }
+    stream << "], data=[";
+    for(std::size_t i=0; i < array.m_data.size(); ++i){
+        if(i > 0){ stream << ", "; }
+        stream << array.m_data[i];
+    }
+    stream << "])";
+    return stream;
+}
+
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-
-
-std::ostream& operator<<(std::ostream& stream, const Array& array);
 
 // -
 void Array::svd(Array& u, Array& singular_values, Array& vt) const;
