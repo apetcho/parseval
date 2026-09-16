@@ -442,7 +442,15 @@ Array& Array::operator/=(const Array& other){
 // -
 Array& Array::operator+=(value_type scalar){
     for(auto& value: this->m_data){
-        value *= scalar;
+        value += scalar;
+    }
+
+    return *this;
+}
+
+Array& Array::operator-=(value_type scalar){
+    for(auto& value: this->m_data){
+        value -= scalar;
     }
 
     return *this;
@@ -456,9 +464,6 @@ public:
 
 
 
-
-
-Array& Array::operator-=(value_type scalar){}
 Array& Array::operator*=(value_type scalar){}
 Array& Array::operator/=(value_type scalar){}
 
