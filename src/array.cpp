@@ -302,6 +302,17 @@ Array::value_type Array::max(void) const{
     return *std::max_element(this->m_data.begin(), this->m_data.end());
 }
 
+// -
+Array Array::operator+(const Array& other) const{
+    this->validate_same_shape(other);
+    Array result(this->m_shape);
+    for(std::size_t i=0; i < this->size(); ++i){
+        result.m_data[i] = this->m_data[i] + other.m_data[i];
+    }
+
+    return result;
+}
+
 /*
 class Array{
 public:
@@ -309,28 +320,26 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
+Array Array::operator-(const Array& other) const{}
+Array Array::operator*(const Array& other) const{}
+Array Array::operator/(const Array& other) const{}
 
-Array Array::operator+(const Array& other) const;
-Array Array::operator-(const Array& other) const;
-Array Array::operator*(const Array& other) const;
-Array Array::operator/(const Array& other) const;
+Array Array::operator+(value_type scalar) const{}
+Array Array::operator-(value_type scalar) const{}
+Array Array::operator*(value_type scalar) const{}
+Array Array::operator/(value_type scalar) const{}
 
-Array Array::operator+(value_type scalar) const;
-Array Array::operator-(value_type scalar) const;
-Array Array::operator*(value_type scalar) const;
-Array Array::operator/(value_type scalar) const;
+Array& Array::operator+=(const Array& other){}
+Array& Array::operator-=(const Array& other){}
+Array& Array::operator*=(const Array& other){}
+Array& Array::operator/=(const Array& other){}
 
-Array& Array::operator+=(const Array& other);
-Array& Array::operator-=(const Array& other);
-Array& Array::operator*=(const Array& other);
-Array& Array::operator/=(const Array& other);
+Array& Array::operator+=(value_type scalar){}
+Array& Array::operator-=(value_type scalar){}
+Array& Array::operator*=(value_type scalar){}
+Array& Array::operator/=(value_type scalar){}
 
-Array& Array::operator+=(value_type scalar);
-Array& Array::operator-=(value_type scalar);
-Array& Array::operator*=(value_type scalar);
-Array& Array::operator/=(value_type scalar);
-
-bool Array::is_close(const Array& other, value_type tolerance=1e-12) const;
+bool Array::is_close(const Array& other, value_type tolerance) const{}
 
 // friends
 Array operator+(value_type scalar, const Array& rhs);
