@@ -105,6 +105,10 @@ Array Array::zeros(const Shape& shape){
     return Array(shape, 0.0);
 }
 
+// -
+Array Array::ones(const Shape& shape){
+    return Array(shape, 1.0);
+}
 
 /*
 class Array{
@@ -113,7 +117,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array Array::ones(const Shape& shape);
+
 Array Array::identity(size_t n);
 Array Array::full(const Shape& shape, value_type value);
 Array Array::arange(value_type start, value_type stop, value_type step=1.0);
