@@ -110,6 +110,18 @@ Array Array::ones(const Shape& shape){
     return Array(shape, 1.0);
 }
 
+
+// -
+Array Array::identity(size_t n){
+    Array::Shape shape = {n, n};
+    auto result = Array::zeros(shape);
+    for(std::size_t i=0; i < n; ++i){
+        result(i, i) = 1.0;
+    }
+
+    return result;
+}
+
 /*
 class Array{
 public:
@@ -118,7 +130,6 @@ public:
 
 
 
-Array Array::identity(size_t n);
 Array Array::full(const Shape& shape, value_type value);
 Array Array::arange(value_type start, value_type stop, value_type step=1.0);
 
