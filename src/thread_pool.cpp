@@ -69,6 +69,31 @@ auto ThreadPool::submit(
     return result;
 }
 
+// -
+void ThreadPool::worker_loop(void){
+    while(true){
+        Task task;
+        {
+            std::unique_lock<std::mutex> lock(this->m_mutex);
+            this->m_condition.wait(
+                lock,
+                [this]{
+                    return this->m_stopping || !this->m_tasks.empty();
+                }
+            );
+
+            if(this->m_stopping && this->m_tasks.empty()){
+                return;
+            }
+
+            task = std::move(this->m_tasks.front());
+            this->m_tasks.pop();
+        }
+
+        task();
+    }
+}
+
 /*
 class ThreadPool{
 public:
@@ -83,8 +108,6 @@ private:
     mutable std::mutex m_mutex;
     std::condition_variable m_condition;
     bool m_stopping = false;
-
-void ThreadPool::worker_loop(void);
 
 };
 
