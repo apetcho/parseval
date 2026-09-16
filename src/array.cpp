@@ -58,6 +58,15 @@ void Array::validate_same_shape(const Array& other) const{
     }
 }
 
+// -------------------
+// -*- Contructors -*-
+// -------------------
+Array::Array(const Shape& shape, value_type value)
+: m_shape{shape}
+, m_data(this->product(shape), value)
+{
+    this->compute_strides();
+}
 
 
 /*
@@ -66,8 +75,7 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-// Contructors
-Array::Array(const Shape& shape, value_type value=0.0);
+
 Array::Array(std::initializer_list<std::size_t> shape, value_type value=0.0);
 Array::Array(const Shape& shape, const std::vector<value_type>& data);
 Array::Array(const Shape& shape, std::vector<value_type>&& data);
