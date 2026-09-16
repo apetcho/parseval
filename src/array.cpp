@@ -220,6 +220,15 @@ const Array::value_type& Array::operator()(Indices... indices) const{
     });
 }
 
+// -
+Array Array::reshape(const Shape& myNewShape) const{
+    if(this->product(myNewShape) != this->size()){
+        throw ParsevalError("Reshape cannot change the number of elements.");
+    }
+
+    return Array(myNewShape, this->m_data);
+}
+
 /*
 class Array{
 public:
@@ -227,7 +236,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array Array::reshape(const Shape& myNewShape) const;
 Array Array::transpose(void) const;
 Array Array::matmul(const Array& other) const;
 
