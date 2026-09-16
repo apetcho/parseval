@@ -18,15 +18,24 @@ ThreadPool::ThreadPool(std::size_t thread_count){
     }
 }
 
+// -
+ThreadPool::~ThreadPool(){
+    {
+        std::lock_guard<std::mutex> lock(this->m_mutex);
+        this->m_stopping = true;
+    }
+    this->m_condition.notify_all();
+    for(auto& worker: this->m_workers){
+        if(worker.joinable()){
+            worker.join();
+        }
+    }
+}
+
 /*
 class ThreadPool{
 public:
 
-
-    ThreadPool(const ThreadPool&) = delete;
-    ThreadPool& operator=(const ThreadPool&) = delete;
-
-ThreadPool::~ThreadPool();
 
 std::size_t ThreadPool::size(void) const noexcept;
 
