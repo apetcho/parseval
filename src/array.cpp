@@ -229,6 +229,25 @@ Array Array::reshape(const Shape& myNewShape) const{
     return Array(myNewShape, this->m_data);
 }
 
+// -
+Array Array::transpose(void) const{
+    if(this->ndim() != 2){
+        throw ParsevalError("`transpose()` requires a two-dimensional array.");
+    }
+
+    const std::size_t rows = this->m_shape[0];
+    const std::size_t cols = this->m_shape[1];
+
+    Array result({cols, rows});
+    for(std::size_t r=0; r < rows; ++r){
+        for(std::size_t c=0; c < cols; ++c){
+            result(c, r) = (*this)(r, c);
+        }
+    }
+
+    return result;
+}
+
 /*
 class Array{
 public:
@@ -236,7 +255,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array Array::transpose(void) const;
 Array Array::matmul(const Array& other) const;
 
 value_type Array::sum(void) const;
