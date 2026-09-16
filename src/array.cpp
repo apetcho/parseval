@@ -456,6 +456,16 @@ Array& Array::operator-=(value_type scalar){
     return *this;
 }
 
+// -
+Array& Array::operator*=(value_type scalar){
+    for(auto& value: this->m_data){
+        value *= scalar;
+    }
+
+    return *this;
+}
+
+
 /*
 class Array{
 public:
@@ -464,7 +474,7 @@ public:
 
 
 
-Array& Array::operator*=(value_type scalar){}
+
 Array& Array::operator/=(value_type scalar){}
 
 bool Array::is_close(const Array& other, value_type tolerance) const{}
