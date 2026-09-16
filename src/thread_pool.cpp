@@ -32,12 +32,15 @@ ThreadPool::~ThreadPool(){
     }
 }
 
+// -
+std::size_t ThreadPool::size(void) const noexcept{
+    return this->m_workers.size();
+}
+
 /*
 class ThreadPool{
 public:
 
-
-std::size_t ThreadPool::size(void) const noexcept;
 
 template<typename Function, typename... Args>
 auto ThreadPool::submit(
