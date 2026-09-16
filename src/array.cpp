@@ -279,6 +279,10 @@ Array Array::matmul(const Array& other) const{
     return result;
 }
 
+// -
+Array::value_type Array::sum(void) const{
+    return std::accumulate(this->m_data.begin(), this->m_data.end(), 0.0);
+}
 
 /*
 class Array{
@@ -287,9 +291,9 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-value_type Array::sum(void) const;
-value_type Array::min(void) const;
-value_type Array::max(void) const;
+
+Array::value_type Array::min(void) const{}
+Array::value_type Array::max(void) const{}
 
 Array Array::operator+(const Array& other) const;
 Array Array::operator-(const Array& other) const;
