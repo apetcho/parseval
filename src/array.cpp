@@ -501,6 +501,11 @@ Array operator+(Array::value_type scalar, const Array& rhs){
     return rhs + scalar;
 }
 
+// -
+Array operator-(Array::value_type scalar, const Array& rhs){
+    return Array::full(rhs.shape(), scalar) - rhs;
+}
+
 
 /*
 class Array{
@@ -509,7 +514,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array operator-(Array::value_type scalar, const Array& rhs){}
+
 Array operator*(Array::value_type scalar, const Array& rhs){}
 Array operator/(Array::value_type scalar, const Array& rhs){}
 
