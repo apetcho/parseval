@@ -194,6 +194,11 @@ Array::value_type* Array::raw_data(void) noexcept{
     return this->m_data.data();
 }
 
+// -
+Array::value_type& Array::at(const Shape& indices){
+    return this->m_data[this->offset(indices)];
+}
+
 /*
 class Array{
 public:
@@ -201,7 +206,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-value_type& Array::at(const Shape& indices);
 const value_type& Array::at(const Shape& indices) const;
 
 template<typename... Indices>
