@@ -94,29 +94,6 @@ void ThreadPool::worker_loop(void){
     }
 }
 
-/*
-class ThreadPool{
-public:
-
-
-private:
-    using Task = std::function<void()>;
-
-    std::vector<std::thread> m_workers;
-    std::queue<Task> m_tasks;
-
-    mutable std::mutex m_mutex;
-    std::condition_variable m_condition;
-    bool m_stopping = false;
-
-};
-
-static inline ThreadPool& global_thread_pool(void){
-    static ThreadPool pool;
-    return pool;
-}
-
-*/
 
 // --------------------------------------------------------------------
 }//-*- end::namespace::parseval                                     -*-

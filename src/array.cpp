@@ -256,7 +256,7 @@ Array Array::matmul(const Array& other) const{
         );
     }
 
-    const std::size_t m = this->m_shape[0];
+    const std::size_t rows = this->m_shape[0];
     const std::size_t k = this->m_shape[1];
     const std::size_t other_rows = other.m_shape[0];
     const std::size_t n = other.m_shape[1];
@@ -267,13 +267,55 @@ Array Array::matmul(const Array& other) const{
         );
     }
 
-    Array result({m, n}, 0.0);
-    for(std::size_t i=0; i < m; ++i){
-        for(std::size_t j=0; j < n; ++j){
-            for(std::size_t p=0; p < k; ++p){
-                result(i, j) = (*this)(i, p) * other(p, j);
+    Array result({rows, n}, 0.0);
+
+    const std::size_t op_count = rows * k * n;
+    auto multiply_row = [this, &other, &result, k, n](std::size_t first_row, std::size_t last_row){
+        for(std::size_t i=first_row; i < last_row; ++i){
+            for(std::size_t j=0; j < n; ++j){
+                double val{0.0};
+
+                for(std::size_t p=0; p < k; ++p){
+                    val += (*this)(i, p) * other(p, j);
+                }
+
+                result(i, j) = val;
             }
         }
+    };
+
+    ThreadPool& pool = global_thread_pool();
+
+    // Small matrix multiplications are faster sequentially, because
+    // sumbitting tasks has overhead.
+
+    if(op_count < Array::parallel_threshold || pool.size() <= 1 || rows <= 1){
+        multiply_row(0, rows);
+
+        return result;
+    }
+
+    const std::size_t worker_count = std::min(pool.size(), rows);
+
+    const std::size_t rows_per_task = (rows + worker_count - 1)/(worker_count);
+
+    std::vector<std::future<void>> tasks{};
+    tasks.reserve(worker_count);
+
+    for(std::size_t worker=0; worker < worker_count; ++worker){
+        const std::size_t first_row = worker * rows_per_task;
+
+        const std::size_t last_row = std::min(rows, first_row + rows_per_task);
+        if(first_row >= last_row){ return; }
+
+        tasks.push_back(pool.submit(multiply_row, first_row, last_row));
+    }
+
+    // Wait for all tasks. Calling get() also propagate exceptions
+    // thrown by worker tasks.
+
+    for(auto& task: tasks){
+        task.get();
     }
 
     return result;
