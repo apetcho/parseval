@@ -127,13 +127,35 @@ Array Array::full(const Shape& shape, value_type value){
     return Array(shape, value);
 }
 
+// -
+Array Array::arange(value_type start, value_type stop, value_type step){
+    if(step==0.0){
+        throw ParsevalError("");
+    }
+
+    std::vector<value_type> values{};
+
+    if(step > 0.0){
+        for(value_type x=start; x < stop; x += step){
+            values.push_back(x);
+        }
+    }else{
+        for(value_type x=start; x > stop; x += step){
+            values.push_back(x);
+        }
+    }
+
+    return Array({values.size()}, std::move(values));
+}
+
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-Array Array::arange(value_type start, value_type stop, value_type step=1.0);
+
 
 std::size_t Array::ndim(void) const noexcept;
 const Shape& Array::shape(void) const noexcept;
