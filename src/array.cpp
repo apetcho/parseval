@@ -158,6 +158,11 @@ const Array::Shape& Array::shape(void) const noexcept{
     return this->m_shape;
 }
 
+// -
+const Array::Shape& Array::stride(void) const noexcept{
+    return this->m_strides;
+}
+
 
 /*
 class Array{
@@ -166,7 +171,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-const Shape& Array::stride(void) const noexcept;
+
 std::size_t Array::size(void) const noexcept;
 bool Array::empty(void) const noexcept;
 const std::vector<value_type>& Array::data(void) const noexcept;
