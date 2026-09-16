@@ -1,24 +1,34 @@
 #include "parseval/parseval.hpp"
 
+#include<algorithm>
+#include<numeric>
+#include<utility>
+#include<cmath>
+
 // --------------------------------------------------------------------
 // -*- begin::namespace::parseval                                   -*-
 // --------------------------------------------------------------------
 namespace parseval{
 // -
 
+//! @brief: Return the number of element this array instance can hold
+std::size_t Array::product(const Shape& shape){
+    if(shape.empty()){ return 1; }
+
+    return std::accumulate(
+        shape.begin(), shape.end(),
+        std::size_t{1},
+        std::multiplies<std::size_t>{}
+    );
+}
+
 /*
-
-class ParsevalError : public std::exception{
-    //! @todo
-};
-
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
 // Contructors
-Array() = default;
 Array::Array(const Shape& shape, value_type value=0.0);
 Array::Array(std::initializer_list<std::size_t> shape, value_type value=0.0);
 Array::Array(const Shape& shape, const std::vector<value_type>& data);
@@ -185,7 +195,7 @@ private:
     std::vector<value_type> m_data;
     std::map<std::string, std::string> m_attributes; // Key-value pairs for metadata
 
-std::size_t Array::product(const Shape& shape);
+
 void Array::compute_strides(void);
 std::size_t Array::offset(const Shape& indices) const;
 void Array::validate_same_shape(const Array& other) const;
