@@ -359,6 +359,15 @@ Array Array::operator+(value_type scalar) const{
     return result;
 }
 
+// -
+Array Array::operator-(value_type scalar) const{
+    Array result(*this);
+    for(auto& value: result.m_data){
+        value -= scalar;
+    }
+
+    return result;
+}
 
 /*
 class Array{
@@ -367,7 +376,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array Array::operator-(value_type scalar) const{}
+
 Array Array::operator*(value_type scalar) const{}
 Array Array::operator/(value_type scalar) const{}
 
