@@ -248,14 +248,44 @@ Array Array::transpose(void) const{
     return result;
 }
 
+// -
+Array Array::matmul(const Array& other) const{
+    if(this->ndim() != 2 || other.ndim() != 2){
+        throw ParsevalError(
+            "`matmul()` currently supports two-dimensional arrays only"
+        );
+    }
+
+    const std::size_t m = this->m_shape[0];
+    const std::size_t k = this->m_shape[1];
+    const std::size_t other_rows = other.m_shape[0];
+    const std::size_t n = other.m_shape[1];
+
+    if(k != other_rows){
+        throw ParsevalError(
+            "Matrix dimensions are incompatible for multiplication"
+        );
+    }
+
+    Array result({m, n}, 0.0);
+    for(std::size_t i=0; i < m; ++i){
+        for(std::size_t j=0; j < n; ++j){
+            for(std::size_t p=0; p < k; ++p){
+                result(i, j) = (*this)(i, p) * other(p, j);
+            }
+        }
+    }
+
+    return result;
+}
+
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-Array Array::matmul(const Array& other) const;
 
 value_type Array::sum(void) const;
 value_type Array::min(void) const;
