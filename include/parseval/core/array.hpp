@@ -263,6 +263,11 @@ private:
 
 };
 
+Array operator+(Array::value_type scalar, const Array& rhs);
+Array operator-(Array::value_type scalar, const Array& rhs);
+Array operator*(Array::value_type scalar, const Array& rhs);
+Array operator/(Array::value_type scalar, const Array& rhs);
+
 
 // --------------------------------------------------------------------
 }//-*- end::namespace::parseval                                     -*-

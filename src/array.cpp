@@ -493,6 +493,14 @@ bool Array::is_close(const Array& other, value_type tolerance) const{
 }
 
 
+// -------------------------
+// -*- friends functions -*-
+// -------------------------
+
+Array operator+(Array::value_type scalar, const Array& rhs){
+    return rhs + scalar;
+}
+
 
 /*
 class Array{
@@ -501,12 +509,9 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-// friends
-Array operator+(value_type scalar, const Array& rhs);
-Array operator-(value_type scalar, const Array& rhs);
-Array operator*(value_type scalar, const Array& rhs);
-Array operator/(value_type scalar, const Array& rhs);
+Array operator-(Array::value_type scalar, const Array& rhs){}
+Array operator*(Array::value_type scalar, const Array& rhs){}
+Array operator/(Array::value_type scalar, const Array& rhs){}
 
 std::ostream& operator<<(std::ostream& stream, const Array& array);
 
