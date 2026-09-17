@@ -257,66 +257,47 @@ Array Array::matmul(const Array& other) const{
     }
 
     const std::size_t rows = this->m_shape[0];
-    const std::size_t k = this->m_shape[1];
+    const std::size_t inner = this->m_shape[1];
     const std::size_t other_rows = other.m_shape[0];
-    const std::size_t n = other.m_shape[1];
+    const std::size_t cols = other.m_shape[1];
 
-    if(k != other_rows){
+    if(inner != other_rows){
         throw ParsevalError(
             "Matrix dimensions are incompatible for multiplication"
         );
     }
 
-    Array result({rows, n}, 0.0);
+    Array result({rows, cols}, 0.0);
 
-    const std::size_t op_count = rows * k * n;
-    auto multiply_row = [this, &other, &result, k, n](std::size_t first_row, std::size_t last_row){
-        for(std::size_t i=first_row; i < last_row; ++i){
-            for(std::size_t j=0; j < n; ++j){
+    // Estimate the total arithmetic work. The helper itself
+    // partitions work by output row.
+    const std::size_t op_count = rows * inner * cols;
+
+    auto multiply_rows = [this, &other, &result, inner, cols](std::size_t begin_row, std::size_t end_row){
+        for(std::size_t row=begin_row; row < end_row; ++row){
+            for(std::size_t col=0; col < cols; ++col){
                 double val{0.0};
 
-                for(std::size_t p=0; p < k; ++p){
-                    val += (*this)(i, p) * other(p, j);
+                for(std::size_t p=0; p < inner; ++p){
+                    val += (*this)(row, p) * other(p, col);
                 }
 
-                result(i, j) = val;
+                result(row, col) = val;
             }
         }
     };
 
-    ThreadPool& pool = global_thread_pool();
-
-    // Small matrix multiplications are faster sequentially, because
-    // sumbitting tasks has overhead.
-
-    if(op_count < Array::parallel_threshold || pool.size() <= 1 || rows <= 1){
-        multiply_row(0, rows);
-
-        return result;
-    }
-
-    const std::size_t worker_count = std::min(pool.size(), rows);
-
-    const std::size_t rows_per_task = (rows + worker_count - 1)/(worker_count);
-
-    std::vector<std::future<void>> tasks{};
-    tasks.reserve(worker_count);
-
-    for(std::size_t worker=0; worker < worker_count; ++worker){
-        const std::size_t first_row = worker * rows_per_task;
-
-        const std::size_t last_row = std::min(rows, first_row + rows_per_task);
-        if(first_row >= last_row){ return; }
-
-        tasks.push_back(pool.submit(multiply_row, first_row, last_row));
-    }
-
-    // Wait for all tasks. Calling get() also propagate exceptions
-    // thrown by worker tasks.
-
-    for(auto& task: tasks){
-        task.get();
-    }
+    // For matrix multiplication, the amount of work per row can be large.
+    // Therefore, use one task per row partition whenever the total operation
+    // count is sufficientily large.
+    const std::size_t minimum_parallel_rows = (
+        (op_count > Array::parallel_threshold) ? 1 : rows + 1
+    );
+    this->parallel_for(
+        rows,
+        multiply_rows,
+        minimum_parallel_rows
+    );
 
     return result;
 }
@@ -571,7 +552,7 @@ bool Array::is_close(const Array& other, value_type tolerance) const{
 
     for(std::size_t i=0; i < this->size(); ++i){
         if(std::abs(this->m_data[i] - other.m_data[i]) > tolerance){
-            return tolerance;
+            return false;
         }
     }
 
