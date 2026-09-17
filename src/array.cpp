@@ -901,14 +901,18 @@ std::size_t Array::rank(void) const{
     return static_cast<std::size_t>(decomposition.rank());
 }
 
+// -
+Array::value_type Array::det(void) const{
+    this->require_square_matrix("det");
+    return this->to_eigen_matrix().determinant();
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-value_type Array::det(void) const;
 Array Array::inverse(void) const;
 value_type Array::trace(void) const;
 
