@@ -1240,8 +1240,11 @@ Array Array::atan(void) const{
     return this->apply_unary([](value_type x){ return std::atan(x); });
 }
 
+// -
+Array Array::cosh(void) const{
+    return this->apply_unary([](value_type x){ return std::cosh(x); });
+}
 
-Array Array::cosh(void) const{}
 Array Array::sinh(void) const{}
 Array Array::tanh(void) const{}
 Array Array::acosh(void) const{}
