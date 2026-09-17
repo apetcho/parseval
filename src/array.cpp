@@ -575,6 +575,57 @@ std::ostream& operator<<(std::ostream& stream, const Array& array){
 }
 
 
+// -
+template<typename Function>
+void Array::parallel_for(
+    std::size_t count,
+    Function&& function,
+    std::size_t minimum_parallel_work=parallel_threshold
+) const{
+    // -
+    if(count==0){ return; }
+
+    ThreadPool& pool = global_thread_pool();
+
+    // Run small operation synchronously. Creating and scheduling
+    // tasks can cost more than the computation itself.
+
+    if(count < minimum_parallel_work || pool.size() <= 1){
+        function(0, count);
+        return;
+    }
+
+    const std::size_t task_count = std::min(count, pool.size());
+    const std::size_t chunk_size = (count + task_count - 1)/task_count;
+
+    // Store one shared callable so every so every submitter task can
+    // safely invoke the same operation.
+
+    using Func = std::decay_t<Function>;
+    auto shared_func = std::make_shared<Func>(std::forward<Func>(function));
+
+    std::vector<std::future<void>> futures{};
+    futures.reserve(task_count);
+
+    for(std::size_t task_index=0; task_count < task_count; ++task_index){
+        const std::size_t begin = task_index * chunk_size;
+        const std::size_t end = std::min(count, begin + chunk_size);
+        if(begin >= end){ break; }
+
+        futures.push_back(pool.submit(
+            [shared_func, begin, end](){
+                (*shared_func)(begin, end)
+            }
+        ));
+    }
+
+    // get() waits for completion and propagates worker exceptions
+    for(auto& future: futures){
+        future.get();
+    }
+}
+
+
 /*
 class Array{
 public:
@@ -685,12 +736,6 @@ private:
 
     static constexpr std::size_t parallel_threshold = 4096;
 
-template<typename Function>
-void Array::parallel_for(
-    std::size_t count,
-    Function&& function,
-    std::size_t minimum_parallel_work=parallel_threshold
-) const;
 
 template<typename Operation>
 Array Array::elementwise_binary(const Array& other, Operation&& operation) const;
