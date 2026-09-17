@@ -229,11 +229,11 @@ private:
         std::size_t minimum_parallel_work=parallel_threshold
     ) const;
 
-    template<typename Operation>
-    Array elementwise_binary(const Array& other, Operation&& operation) const;
+    template<typename BinaryOp>
+    Array elementwise_binary(const Array& other, BinaryOp&& func) const;
 
-    template<typename Operation>
-    Array elementwise_scalar(value_type scalar, Operation&& operation) const;
+    template<typename ScalarOp>
+    Array elementwise_scalar(value_type scalar, ScalarOp&& func) const;
 
     // utility method for handling Eigen library
     void require_matrix(const char* operation) const;

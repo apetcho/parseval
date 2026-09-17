@@ -633,7 +633,7 @@ Array Array::elementwise_binary(const Array& other, BinaryOp&& func) const{
     Array result(this->m_shape);
     this->parallel_for(
         this->size(),
-        [this, &other, &result, operation](std::size_t begin, std::size_t end){
+        [this, &other, &result, func](std::size_t begin, std::size_t end){
             for(std::size_t i=begin; i < end; ++i){
                 result.m_data[i] = func(this->m_data[i], other.m_data[i]);
             }
@@ -642,6 +642,24 @@ Array Array::elementwise_binary(const Array& other, BinaryOp&& func) const{
 
     return result;
 }
+
+// -
+template<typename ScalarOp>
+Array Array::elementwise_scalar(value_type scalar, ScalarOp&& func) const{
+    Array result(this->m_shape);
+
+    this->parallel_for(
+        this->size(),
+        [this, &result, scalar, func](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                result.m_data[i] = func(this->m_data[i], scalar);
+            }
+        }
+    );
+
+    return result;
+}
+
 
 
 /*
@@ -751,11 +769,6 @@ private:
 
     static constexpr std::size_t parallel_threshold = 4096;
 
-
-
-
-template<typename Operation>
-Array Array::elementwise_scalar(value_type scalar, Operation&& operation) const;
 
 // utility method for handling Eigen library
 void Array::require_matrix(const char* operation) const;
