@@ -1416,6 +1416,7 @@ void Array::save_text(const std::string& path) const{
     for(const auto& val: this->m_data){
         fout << val << "\n";
     }
+    fout.close();
 }
 
 // -
@@ -1471,9 +1472,36 @@ Array Array::load_text(const std::string& path){
         throw ParsevalError("Data size does not match shape");
     }
 
+    fin.close();
+
     return Array(std::move(shape), std::move(data));
 }
 
+// - Binary I/O
+// Format:
+//  - 8-byte little-endian: number of dimensions
+//  - for-each dim: 8-byte size
+//  - the double values
+
+// -
+void Array::save_binary(const std::string& path) const{
+    std::ofstream fout(path, std::ios::binary);
+    if(!fout){
+        throw ParsevalError("Unable to open binary file for writing: " + path);
+    }
+
+    std::size_t N = this->m_shape.size();
+    fout.write(reinterpret_cast<char*>(&N), sizeof(N));
+    for(std::size_t n: this->m_shape){
+        fout.write(reinterpret_cast<char*>(&n), sizeof(n));
+    }
+    fout.write(
+        reinterpret_cast<const char*>(this->m_data.data()),
+        static_cast<std::streamsize>(this->m_data.size() * sizeof(value_type))
+    );
+}
+
+Array Array::load_binary(const std::string& path){}
 
 /*
 class Array{
@@ -1481,10 +1509,6 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-
-void Array::save_binary(const std::string& path) const;
-Array Array::load_binary(const std::string& path);
 void Array::save_csv(const std::string& path, char delimiter=',') const;
 Array Array::load_csv(const std::string& path, char delimiter=',');
 void Array::save_sqlite(const std::string& path, const std::string& table_prfix) const;
