@@ -965,8 +965,19 @@ Array::Shape Array::broadcast_shape(const Array::Shape& a, const Array::Shape& b
     return result;
 }
 
+// -
+Array::Shape Array::broadcast_strides(const Array::Shape& shape, const Array::Shape& strides){
+    // Compute strides for row-major
+    Array::Shape my_shape(shape.size());
+    my_shape[shape.size() - 1] = 1;
+    for(std::size_t i=shape.size()-1; i > 0; --i){
+        my_shape[i-1] = shape[i] * my_shape[i];
+    }
 
-Array::Shape Array::broadcast_strides(const Array::Shape& shape, const Array::Shape& strides){}
+    return my_shape;
+}
+
+
 std::string Array::to_string(const Array::Shape& shape){}
 
 /*
