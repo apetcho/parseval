@@ -1779,6 +1779,19 @@ void Array::set_attribute(const std::string& name, const std::string& value){
     this->m_attributes[name] = value;
 }
 
+// -
+std::string Array::get_attribute(const std::string& name) const{
+    auto entry = this->m_attributes.find(name);
+    if(entry != this->m_attributes.end()){
+        return entry->second;
+    }
+
+    return "";  // or throw an exception
+}
+
+bool Array::has_attribute(const std::string& name) const{}
+const std::map<std::string, std::string>& Array::attributes(void) const{}
+
 
 /*
 class Array{
@@ -1808,10 +1821,6 @@ void Array::save_netcdf_multiple(
 
 std::map<std::string, Array> Array::load_netcdf_multiple(const std::string& path);
 
-
-std::string Array::get_attribue(const std::string& name) const{}
-bool Array::has_attribute(const std::string& name) const{}
-const std::map<std::string, std::string>& Array::attributes(void) const{}
 
 
 private:

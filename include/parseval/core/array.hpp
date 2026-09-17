@@ -205,7 +205,7 @@ public:
     );
 
     void set_attribute(const std::string& name, const std::string& value);
-    std::string get_attribue(const std::string& name) const;
+    std::string get_attribute(const std::string& name) const;
     bool has_attribute(const std::string& name) const;
     const std::map<std::string, std::string>& attributes(void) const;
 
