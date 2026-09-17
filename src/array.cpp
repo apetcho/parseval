@@ -382,10 +382,14 @@ Array Array::operator/(const Array& other) const{
         if(other.m_data[i] == 0.0){
             throw ParsevalError("Division by zero");
         }
-        result.m_data[i] = this->m_data[i] / other.m_data[i];
     }
 
-    return result;
+    return this->elementwise_binary(
+        other,
+        [](Array::value_type lhs, Array::value_type rhs){
+            return lhs / rhs;
+        }
+    );
 }
 
 // -
