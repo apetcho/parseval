@@ -1499,9 +1499,36 @@ void Array::save_binary(const std::string& path) const{
         reinterpret_cast<const char*>(this->m_data.data()),
         static_cast<std::streamsize>(this->m_data.size() * sizeof(value_type))
     );
+    fout.close();
 }
 
-Array Array::load_binary(const std::string& path){}
+// -
+Array Array::load_binary(const std::string& path){
+    std::ifstream fin(path, std::ios::binary);
+    if(!fin){
+        throw ParsevalError("Unable to open binary file for reading: " + path);
+    }
+
+    std::size_t N{};
+    fin.read(reinterpret_cast<char*>(&N), sizeof(N));
+
+    Shape shape{};
+    shape.reserve(N);
+    for(std::size_t i=0; i < N; ++i){
+        std::size_t n{};
+        fin.read(reinterpret_cast<char*>(&n), sizeof(n));
+        shape.push_back(n);
+    }
+
+    const std::size_t SIZE = Array::product(shape);
+    std::vector<Array::value_type> data(SIZE);
+    fin.read(
+        reinterpret_cast<char*>(data.data()),
+        static_cast<std::streamsize>(SIZE * sizeof(Array::value_type))
+    );
+
+    return Array(std::move(shape), std::move(data));
+}
 
 /*
 class Array{
