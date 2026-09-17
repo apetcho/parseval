@@ -1774,6 +1774,12 @@ Array Array::load_sqlite(const std::string& path, const std::string& table_prefi
     return result;
 }
 
+// -
+void Array::set_attribute(const std::string& name, const std::string& value){
+    this->m_attributes[name] = value;
+}
+
+
 /*
 class Array{
 public:
@@ -1802,10 +1808,10 @@ void Array::save_netcdf_multiple(
 
 std::map<std::string, Array> Array::load_netcdf_multiple(const std::string& path);
 
-void Array::set_attribute(const std::string& name, const std::string& value);
-std::string Array::get_attribue(const std::string& name) const;
-bool Array::has_attribute(const std::string& name) const;
-const std::map<std::string, std::string>& Array::attributes(void) const;
+
+std::string Array::get_attribue(const std::string& name) const{}
+bool Array::has_attribute(const std::string& name) const{}
+const std::map<std::string, std::string>& Array::attributes(void) const{}
 
 
 private:
@@ -1816,12 +1822,6 @@ private:
 
     static constexpr std::size_t parallel_threshold = 4096;
 
-
-
-template<typename BinarOp>
-Array Array::elementwise_binary_broadcast(
-    const Array& other, BinarOp op
-) const;
 
 };
 

@@ -181,6 +181,7 @@ public:
     void save_sqlite(const std::string& path, const std::string& table_prfix) const;
     static Array load_sqlite(const std::string& path, const std::string& table_prefix);
 
+    // -
     static std::vector<std::size_t> to_netcdf_shape(const Shape& shape){
         return std::vector<std::size_t>(shape.begin(), shape.end());
     }

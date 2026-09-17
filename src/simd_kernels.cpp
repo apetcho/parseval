@@ -74,3 +74,16 @@ Array matmul_optimized(const Array& A, const Array& B){
 // --------------------------------------------------------------------
 }//-*- end::namespace::parseval                                     -*-
 // --------------------------------------------------------------------
+
+/*
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Using the uploaded file, continue the project its contains by refactoring the SIMD routines by replacing `__m128d` with `__m512d` for even more
+parallelism. In addition to supporting `addition`, `multiplication`, and
+matrix multiplication via `matmul_optimized()`, implement subtraction and
+division operations. Where necessary, consider manually unrolling the inner
+loops of the the blocking algorithm to reduce branch overhead. Integrate these
+improvements into the `Array` methods.
+
+1.  **AVX2/AVX-512**: Replace `__m128d` (2 doubles) with `__m256d` (4 doubles) or `__m512d` (8 doubles) for even more parallelism.
+2.  **Loop Unrolling**: Manually unroll the inner loops of the blocking algorithm to reduce branch overhead.
+*/
