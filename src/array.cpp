@@ -1527,8 +1527,35 @@ Array Array::load_binary(const std::string& path){
         static_cast<std::streamsize>(SIZE * sizeof(Array::value_type))
     );
 
+    fin.close();
+
     return Array(std::move(shape), std::move(data));
 }
+
+// -
+void Array::save_csv(const std::string& path, char delimiter) const{
+    if(this->ndim() != 2){
+        throw ParsevalError("`save_csv()` requires a 2D array");
+    }
+
+    std::ofstream fout(path);
+    if(!fout){
+        throw ParsevalError("Unable to open CSV file for writing: " + path);
+    }
+
+    const std::size_t rows = this->m_shape[0];
+    const std::size_t cols = this->m_shape[1];
+
+    for(std::size_t i=0; i < rows; ++i){
+        for(std::size_t j=0; j < cols; ++j){
+            if(j > 0){ fout << delimiter; }
+            fout << (*this)(i, j);
+        }
+        fout << "\n";
+    }
+}
+
+Array Array::load_csv(const std::string& path, char delimiter){}
 
 /*
 class Array{
@@ -1536,8 +1563,7 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-void Array::save_csv(const std::string& path, char delimiter=',') const;
-Array Array::load_csv(const std::string& path, char delimiter=',');
+
 void Array::save_sqlite(const std::string& path, const std::string& table_prfix) const;
 Array Array::load_sqlite(const std::string& path, const std::string& table_prefix);
 
