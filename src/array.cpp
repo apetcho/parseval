@@ -920,6 +920,19 @@ Array Array::inverse(void) const{
     return Array::from_eigen_matrix(decomposition.inverse());
 }
 
+// -
+Array::value_type Array::trace(void) const{
+    this->require_square_matrix("trace");
+
+    const std::size_t n = this->m_shape[0];
+    Array::value_type result{0.0};
+
+    for(std::size_t i=0; i < n; ++i){
+        result += (*this)(i, i);
+    }
+
+    return result;
+}
 
 /*
 class Array{
@@ -927,8 +940,6 @@ public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-value_type Array::trace(void) const;
 
 // 1D slice: [start, stop) with step
 Array Array::slice(std::size_t start, std::size_t stop, std::size_t step=1) const;
