@@ -1323,7 +1323,11 @@ Array Array::map(UnaryFn&& fn) const{
     return this->apply_unary(std::move(fn));
 }
 
-Array Array::map(const Array& other, BinaryFn&& fn) const{}
+// -
+Array Array::map(const Array& other, BinaryFn&& fn) const{
+    return this->elementwise_binary_broadcast(other, std::move(fn));
+}
+
 bool Array::any(UnaryPredicate&& predicate) const{}
 bool Array::all(UnaryPredicate&& predicate) const{}
 
