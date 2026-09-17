@@ -1353,6 +1353,44 @@ bool Array::all(UnaryPredicate&& predicate) const{
     return result;
 }
 
+// -
+Array Array::reduce_axis(int axis, BinaryFn&& op) const{
+    if(this->ndim() != 2){
+        throw ParsevalError("reduce_axis requires a 2D array");
+    }
+    if(axis < -1 || axis > 0){
+        throw ParsevalError("axis must be -1 or 0 for 2D");
+    }
+    axis = (axis == -1) ? 0 : axis;
+
+    const std::size_t rows = this->m_shape[0];
+    const std::size_t cols = this->m_shape[1];
+
+    if(axis == 0){
+        // Reduce rows -> 1D of length cols
+        Array result({cols});
+        for(std::size_t j=0; j < cols; ++j){
+            value_type acc = 0.0;
+            for(std::size_t i=0; i < rows; ++i){
+                acc = op(acc, (*this)(i, j));
+            }
+            result(j) = acc;
+        }
+        return result;
+    }else{
+        // Reduce columns -> 1D of length rows
+        Array result({rows});
+        for(std::size_t i=0; i < rows; ++i){
+            value_type acc = 0.0;
+            for(std::size_t j=0; j < cols; ++j){
+                acc = op(acc, (*this)(i, j));
+            }
+            result(i) = acc;
+        }
+        return result;
+    }
+}
+
 /*
 class Array{
 public:
@@ -1418,7 +1456,6 @@ Array Array::elementwise_binary_broadcast(
     const Array& other, BinarOp op
 ) const;
 
-Array Array::reduce_axis(int axis, auto&& op) const;
 };
 
 */

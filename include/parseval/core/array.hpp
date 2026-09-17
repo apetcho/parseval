@@ -260,7 +260,7 @@ private:
         const Array& other, BinaryFn&& fn
     ) const;
 
-    Array reduce_axis(int axis, auto&& op) const;
+    Array reduce_axis(int axis, BinaryFn&& op) const;
 
 };
 
