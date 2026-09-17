@@ -56,7 +56,19 @@ static inline void simd_mul(
     double* __restrict__ out,
     std::size_t size
 ){
-    //! @todo: provide the implementation here
+    std::size_t i = 0;
+    const std::size_t SIZE = (size / 2) * 2;
+
+    for(; i < SIZE; i += 2){
+        __m128d va = _mm_loadu_pd(&a[i]);
+        __m128d vb = _mm_loadu_pd(&b[i]);
+        __m128d vr = _mm_mul_pd(va, vb);
+        _mm_storeu_pd(&out[i], vr);
+    }
+
+    for(; i < size; ++i){
+        out[i] = a[i] * b[i];
+    }
 }
 
 // Optimized Matrix Multiplication with Blocking (Tilin)
