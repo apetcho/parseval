@@ -491,8 +491,16 @@ Array& Array::operator/=(const Array& other){
         if(other.m_data[i]==0.0){
             throw ParsevalError("Division by zero");
         }
-        this->m_data[i] *= other.m_data[i];
     }
+
+    this->parallel_for(
+        this->size(),
+        [this, &other](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                this->m_data[i] /= other.m_data[i];
+            }
+        }
+    );
 
     return *this;
 }
