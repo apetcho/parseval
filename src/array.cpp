@@ -404,12 +404,12 @@ Array Array::operator+(value_type scalar) const{
 
 // -
 Array Array::operator-(value_type scalar) const{
-    Array result(*this);
-    for(auto& value: result.m_data){
-        value -= scalar;
-    }
-
-    return result;
+    return this->elementwise_scalar(
+        scalar,
+        [](Array::value_type val, Array::value_type scalar_value){
+            return val - scalar_value;
+        }
+    );
 }
 
 // -
