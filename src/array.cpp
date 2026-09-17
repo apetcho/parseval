@@ -1794,7 +1794,9 @@ bool Array::has_attribute(const std::string& name) const{
     return this->m_attributes.find(name) != this->m_attributes.end();
 }
 
-const std::map<std::string, std::string>& Array::attributes(void) const{}
+const std::map<std::string, std::string>& Array::attributes(void) const{
+    return this->m_attributes;
+}
 
 
 /*
