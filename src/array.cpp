@@ -356,13 +356,12 @@ Array Array::operator+(const Array& other) const{
 
 // -
 Array Array::operator-(const Array& other) const{
-    this->validate_same_shape(other);
-    Array result(this->m_shape);
-    for(std::size_t i=0; i < this->size(); ++i){
-        result.m_data[i] = this->m_data[i] - other.m_data[i];
-    }
-
-    return result;
+    return this->elementwise_binary(
+        other,
+        [](Array::value_type lhs, Array::value_type rhs){
+            return lhs - rhs;
+        }
+    );
 }
 
 // -
