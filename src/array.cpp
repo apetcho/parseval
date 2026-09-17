@@ -376,18 +376,29 @@ Array Array::operator*(const Array& other) const{
 
 // -
 Array Array::operator/(const Array& other) const{
-    this->validate_same_shape(other);
-    Array result(this->m_shape);
-    for(std::size_t i=0; i < this->size(); ++i){
-        if(other.m_data[i] == 0.0){
-            throw ParsevalError("Division by zero");
-        }
-    }
+    // this->validate_same_shape(other);
+    // Array result(this->m_shape);
+    // for(std::size_t i=0; i < this->size(); ++i){
+    //     if(other.m_data[i] == 0.0){
+    //         throw ParsevalError("Division by zero");
+    //     }
+    // }
 
-    return this->elementwise_binary(
+    // return this->elementwise_binary(
+    //     other,
+    //     [](Array::value_type lhs, Array::value_type rhs){
+    //         return lhs / rhs;
+    //     }
+    // );
+
+    // For broadcasting, we can't pre-check all zeros globally; check on the fly
+    return this->elementwise_binary_broadcast(
         other,
-        [](Array::value_type lhs, Array::value_type rhs){
-            return lhs / rhs;
+        [](value_type x, value_type y){
+            if(y==0.0){
+                throw ParsevalError("Division by zero");
+            }
+            return x / y;
         }
     );
 }
