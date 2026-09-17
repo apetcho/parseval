@@ -6,6 +6,9 @@
 #include<Eigen/QR>
 #include<Eigen/SVD>
 
+#include<sqlite3.h>
+#include<sqlite3ext.h>
+
 #include<algorithm>
 #include<sstream>
 #include<fstream>
@@ -1607,15 +1610,105 @@ Array Array::load_csv(const std::string& path, char delimiter){
     return Array({nr, nc}, std::move(data));
 }
 
+// -
+void Array::save_sqlite(
+    const std::string& path,
+    const std::string& table_prfix
+) const{
+    if(this->ndim() > 2){
+        throw ParsevalError("`save_sqlite()` supports 1D or 2D arrays");
+    }
+
+    sqlite3* db = nullptr;
+    auto status = sqlite3_open_v2(
+        path.c_str(), &db,
+        SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr
+    );
+    if(status != SQLITE_OK){
+        throw ParsevalError(
+            "SQLite open failed: " + std::string(sqlite3_errmsg(db))
+        );
+    }
+
+    std::string query{};
+
+    std::string table_name = table_prfix + "_array";
+
+    query = "DROP TABLE IF EXIST " + table_name + ";";
+    status = sqlite3_exec(db, query.c_str(), nullptr, nullptr, nullptr);
+    if(status != SQLITE_OK){
+        sqlite3_close(db);
+        throw ParsevalError(
+            "SQLite drop failed: "  + std::string(sqlite3_errmsg(db))
+        );
+    }
+
+    if(this->ndim() == 1){
+        query = "CREATE TABLE " + table_name +
+            " (row INTEGER PRIMARY KEY, value REAL);" ;
+    }else{
+        query = "CREATE TABLE " + table_name +
+            " (row INTEGER, col INTEGER, value REAL, PRIMARY KEY(row, col));";
+    }
+
+    status = sqlite3_exec(
+        db, query.c_str(),
+        nullptr, nullptr, nullptr
+    );
+    if(status != SQLITE_OK){
+        sqlite3_close(db);
+        throw ParsevalError(
+            "SQLite create failed: " + std::string(sqlite3_errmsg(db))
+        );
+    }
+
+    if(this->ndim() == 1){
+        query = "INSERT INTO " + table_name + " (row, value) VALUES (?, ?);";
+    }else{
+        query = "INSERT INTO "  + table_name + " (row, col, value) VALUES (?, ?, ?);";
+    }
+
+    sqlite3_stmt* stmt;
+    status = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if(status != SQLITE_OK){
+        sqlite3_close(db);
+        std::stringstream ss;
+        ss << "SQLite prepare failed: " << sqlite3_errmsg(db);
+        throw ParsevalError(ss.str());
+    }
+
+    if(this->ndim() == 1){
+        for(std::size_t i=0; i < this->size(); ++i){
+            sqlite3_bind_int64(stmt, 1, static_cast<sqlite3_int64>(i));
+            sqlite3_bind_double(stmt, 2, this->m_data[i]);
+            sqlite3_step(stmt);
+            sqlite3_reset(stmt);
+        }
+    }else{
+        for(std::size_t i=0; i < this->m_shape[0]; ++i){
+            for(std::size_t j=0; j < this->m_shape[1]; ++j){
+                sqlite3_bind_int64(stmt, 1, static_cast<sqlite3_int64>(i));
+                sqlite3_bind_int64(stmt, 2, static_cast<sqlite3_int64>(j));
+                sqlite3_bind_double(stmt, 3, (*this)(i, j));
+                sqlite3_step(stmt);
+                sqlite3_reset(stmt);
+            }
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+}
+
+
+Array Array::load_sqlite(const std::string& path, const std::string& table_prefix){}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-void Array::save_sqlite(const std::string& path, const std::string& table_prfix) const;
-Array Array::load_sqlite(const std::string& path, const std::string& table_prefix);
 
     static std::vector<std::size_t> to_netcdf_shape(const Shape& shape){
         return std::vector<std::size_t>(shape.begin(), shape.end());
