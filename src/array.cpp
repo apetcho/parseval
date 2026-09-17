@@ -1328,7 +1328,19 @@ Array Array::map(const Array& other, BinaryFn&& fn) const{
     return this->elementwise_binary_broadcast(other, std::move(fn));
 }
 
-bool Array::any(UnaryPredicate&& predicate) const{}
+// -
+bool Array::any(UnaryPredicate&& predicate) const{
+    bool result{false};
+    for(const auto& x: this->m_data){
+        if(predicate(x)){
+            result = true;
+            break;
+        }
+    }
+
+    return result;
+}
+
 bool Array::all(UnaryPredicate&& predicate) const{}
 
 /*
