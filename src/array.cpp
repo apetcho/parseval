@@ -748,7 +748,20 @@ Array Array::from_eigen_matrix(const Eigen::MatrixXd& matrix){
     return Array(Array::Shape{rows, cols}, std::move(values));
 }
 
-Array Array::from_eigen_vector(const Eigen::VectorXd& vec){}
+// -
+Array Array::from_eigen_vector(const Eigen::VectorXd& vec){
+    std::vector<Array::value_type> values{};
+    values.reserve(static_cast<std::size_t>(vec.size()));
+
+    for(Eigen::Index i=0; i < vec.size(); ++i){
+        values.push_back(vec(i));
+    }
+
+    return Array(
+        Array::Shape{static_cast<std::size_t>(vec.size())},
+        std::move(values)
+    );
+}
 
 /*
 class Array{
