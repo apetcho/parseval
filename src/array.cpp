@@ -709,7 +709,28 @@ void Array::require_square_matrix(const char* operation) const{
     }
 }
 
-Eigen::MatrixXd Array::to_eigen_matrix(void) const{}
+// -
+Eigen::MatrixXd Array::to_eigen_matrix(void) const{
+    this->require_matrix("Matrix conversion");
+
+    Eigen::MatrixXd matrix(
+        static_cast<Eigen::Index>(this->m_shape[0]),
+        static_cast<Eigen::Index>(this->m_shape[1])
+    );
+
+    for(std::size_t row=0; row < this->m_shape[0]; ++row){
+        for(std::size_t col=0; col < this->m_shape[1]; ++col){
+            matrix(
+                static_cast<Eigen::Index>(row),
+                static_cast<Eigen::Index>(col)
+            ) = (*this)(row, col);
+        }
+    }
+
+    return matrix;
+}
+
+
 Array Array::from_eigen_matrix(const Eigen::MatrixXd& matrix){}
 Array Array::from_eigen_vector(const Eigen::VectorXd& vec){}
 
