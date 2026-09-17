@@ -825,15 +825,28 @@ void Array::lu(Array& l, Array& u, Array& p) const{
     p = Array::from_eigen_matrix(p_matrix);
 }
 
+// -
+Array Array::cholesky(void) const{
+    this->require_square_matrix("cholesky");
+
+    const Eigen::MatrixXd matrix = this->to_eigen_matrix();
+
+    Eigen::LLT<Eigen::MatrixXd> decomposition(matrix);
+    if(decomposition.info() != Eigen::Success){
+        throw ParsevalError(
+            "Cholesky decomposition requiresa symmetric positive-definite matrix"
+        );
+    }
+
+    return Array::from_eigen_matrix(decomposition.matrixL());
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-
-void Array::cholesky(void) const{}
 void Array::eigen(Array& eigenValues, Array& eigenVectors) const{}
 
 Array Array::diag(void) const;
