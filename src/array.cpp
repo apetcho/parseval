@@ -1295,7 +1295,10 @@ Array Array::sqrt(void) const{
     });
 }
 
-Array Array::abs(void) const{}
+// -
+Array Array::abs(void) const{
+    return this->apply_unary([](value_type x){ return std::abs(x); });
+}
 
 /*
 class Array{
