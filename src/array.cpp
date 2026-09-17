@@ -1316,18 +1316,23 @@ Array Array::apply_unary(UnaryFn&& fn) const{
     return result;
 }
 
+// -----------------------------
+// --- Functional primitives ---
+// -----------------------------
+Array Array::map(UnaryFn&& fn) const{
+    return this->apply_unary(std::move(fn));
+}
+
+Array Array::map(const Array& other, BinaryFn&& fn) const{}
+bool Array::any(UnaryPredicate&& predicate) const{}
+bool Array::all(UnaryPredicate&& predicate) const{}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-
-// Functional primitives
-Array Array::map(auto&& fn) const;
-Array Array::map(const Array& other, auto&& fn) const;
-Array Array::any(int axis=-1) const;
-Array Array::all(int axis=-1) const;
 
 // - Apply a function to each element; returns same shape
 Array Array::apply(auto&& fn) const;

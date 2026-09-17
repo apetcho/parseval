@@ -163,10 +163,10 @@ public:
 
     Array map(UnaryFn&& fn) const;
     Array map(const Array& other, BinaryFn&& fn) const;
-    Array any(UnaryPredicate&& fn) const;
-    Array all(UnaryPredicate&& fn) const;
+    bool any(UnaryPredicate&& fn) const;
+    bool all(UnaryPredicate&& fn) const;
     // Apply a function to each element; returns same shape
-    Array apply(auto&& fn) const;
+    Array apply(UnaryFn&& fn) const;
 
 
     // -----------
