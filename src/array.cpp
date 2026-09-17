@@ -907,13 +907,27 @@ Array::value_type Array::det(void) const{
     return this->to_eigen_matrix().determinant();
 }
 
+Array Array::inverse(void) const{
+    this->require_square_matrix("inverse");
+
+    const Eigen::MatrixXd matrix = this->to_eigen_matrix();
+    Eigen::FullPivLU<Eigen::MatrixXd> decomposition(matrix);
+
+    if(!decomposition.isInvertible()){
+        throw ParsevalError("Cannot invert a singular matrix");
+    }
+
+    return Array::from_eigen_matrix(decomposition.inverse());
+}
+
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-Array Array::inverse(void) const;
+
 value_type Array::trace(void) const;
 
 // 1D slice: [start, stop) with step
