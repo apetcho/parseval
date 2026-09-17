@@ -551,9 +551,14 @@ Array& Array::operator/=(value_type scalar){
     if(scalar == 0.0){
         throw ParsevalError("Division by zero");
     }
-    for(auto& value: this->m_data){
-        value *= scalar;
-    }
+    this->parallel_for(
+        this->size(),
+        [this, scalar](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                this->m_data[i] /= scalar;
+            }
+        }
+    );
 
     return *this;
 }
