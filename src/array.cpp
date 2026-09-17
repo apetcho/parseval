@@ -1225,7 +1225,11 @@ Array Array::tan(void) const{
     return this->apply_unary([](value_type x){ return std::tan(x); });
 }
 
-Array Array::acos(void) const{}
+// -
+Array Array::acos(void) const{
+    return this->apply_unary([](value_type x){ return std::acos(x); });
+}
+
 Array Array::asin(void) const{}
 Array Array::atan(void) const{}
 Array Array::cosh(void) const{}
