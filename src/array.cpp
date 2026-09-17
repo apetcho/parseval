@@ -1208,29 +1208,35 @@ Array Array::slice(
     return result;
 }
 
+// --------------------------------------
+// --- Common Math function as method ---
+// --------------------------------------
+Array Array::cos(void) const{
+    return this->apply_unary([](value_type x){ return std::cos(x); });
+}
+
+// -
+Array Array::sin(void) const{}
+Array Array::tan(void) const{}
+Array Array::acos(void) const{}
+Array Array::asin(void) const{}
+Array Array::atan(void) const{}
+Array Array::cosh(void) const{}
+Array Array::sinh(void) const{}
+Array Array::tanh(void) const{}
+Array Array::acosh(void) const{}
+Array Array::asinh(void) const{}
+Array Array::atanh(void) const{}
+Array Array::exp(void) const{}
+Array Array::log(void) const{}
+Array Array::sqrt(void) const{}
+Array Array::abs(void) const{}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
-
-// - Math function as method
-Array Array::cos(void) const;
-Array Array::sin(void) const;
-Array Array::tan(void) const;
-Array Array::acos(void) const;
-Array Array::asin(void) const;
-Array Array::atan(void) const;
-Array Array::cosh(void) const;
-Array Array::sinh(void) const;
-Array Array::tanh(void) const;
-Array Array::acosh(void) const;
-Array Array::asinh(void) const;
-Array Array::atanh(void) const;
-Array Array::exp(void) const;
-Array Array::log(void) const;
-Array Array::sqrt(void) const;
-Array Array::abs(void) const;
 
 
 // Functional primitives
