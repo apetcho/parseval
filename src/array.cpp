@@ -334,11 +334,15 @@ Array::value_type Array::max(void) const{
 
 // -
 Array Array::operator+(const Array& other) const{
-    return this->elementwise_binary(
+    // return this->elementwise_binary(
+    //     other,
+    //     [](Array::value_type lhs, Array::value_type rhs){
+    //         return lhs + rhs;
+    //     }
+    // );
+    return this->elementwise_binary_broadcast(
         other,
-        [](Array::value_type lhs, Array::value_type rhs){
-            return lhs + rhs;
-        }
+        [](value_type x, value_type y){ return x + y; }
     );
 }
 

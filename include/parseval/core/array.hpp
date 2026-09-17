@@ -256,7 +256,7 @@ private:
     Array apply_unary(UnaryFn&& fn) const;
 
     //template<typename BinarOp>
-    Array elementwise_binary_broad_cast(
+    Array elementwise_binary_broadcast(
         const Array& other, BinaryFn&& fn
     ) const;
 
