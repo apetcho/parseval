@@ -26,16 +26,31 @@ class Array;
 // We will use SSE2 (2 doubles) for meximum compatibility with older x86_64 CPUs
 // as it's the baseline for all x64 CPUs.
 
-inline void simd_add(
+static inline void simd_add(
     const double* __restrict__ a,
     const double* __restrict__ b,
     double* __restrict__ out,
     std::size_t size
 ){
-    //! @todo: provide the implementation here
+    std::size_t i = 0;
+    // Process 2 doubles at a time (SSE2)
+    const std::size_t simd_size = (size / 2) * 2;
+
+    for(; i < simd_size; i += 2){
+        __m128d va = _mm_loadu_pd(&a[i]);
+        __m128d vb = _mm_loadu_pd(&b[i]);
+        __m128d vr = _mm_add_pd(va, vb);
+        _mm_storeu_pd(&out[i], vr);
+    }
+
+    // Handle remaining elements
+    for(; i < size; ++i){
+        out[i] = a[i] + b[i];
+    }
 }
 
-inline void simd_mul(
+// -
+static inline void simd_mul(
     const double* __restrict__ a,
     const double* __restrict__ b,
     double* __restrict__ out,
