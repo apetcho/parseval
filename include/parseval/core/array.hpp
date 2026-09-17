@@ -7,11 +7,7 @@
 #include<iostream>
 #include<initializer_list>
 
-#include<Eigen/Cholesky>
-#include<Eigen/Eigenvalues>
-#include<Eigen/LU>
-#include<Eigen/QR>
-#include<Eigen/SVD>
+#include<Eigen/Core>
 
 #include "thread_pool.hpp"
 
@@ -25,11 +21,11 @@ namespace parseval{
 class ParsevalError : public std::runtime_error{
 public:
     ParsevalError()
-    : std::runtime_error("unknown error caugth")
+    : std::runtime_error("ParsevalError: unknown error caugth")
     {}
 
     explicit ParsevalError(const char* msg)
-    : std::runtime_error(msg)
+    : std::runtime_error(std::string("ParsevalError: ") + msg)
     {}
 
     explicit ParsevalError(const std::string& msg)

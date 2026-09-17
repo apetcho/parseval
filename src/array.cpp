@@ -1,5 +1,11 @@
 #include "parseval/parseval.hpp"
 
+#include<Eigen/Cholesky>
+#include<Eigen/Eigenvalues>
+#include<Eigen/LU>
+#include<Eigen/QR>
+#include<Eigen/SVD>
+
 #include<algorithm>
 #include<numeric>
 #include<utility>
@@ -691,10 +697,21 @@ Array Array::elementwise_scalar(value_type scalar, ScalarOp&& func) const{
 
 void Array::require_matrix(const char* operation) const{
     if(this->ndim() != 2){
-        throw ParsevalError(" requires a two-dimensional array");
+        throw ParsevalError(std::string(operation) + " requires a two-dimensional array");
     }
 }
 
+// -
+void Array::require_square_matrix(const char* operation) const{
+    this->require_matrix(operation);
+    if(this->m_shape[0] != this->m_shape[1]){
+        throw ParsevalError(std::string(operation) + " requires a square matrix");
+    }
+}
+
+Eigen::MatrixXd Array::to_eigen_matrix(void) const{}
+Array Array::from_eigen_matrix(const Eigen::MatrixXd& matrix){}
+Array Array::from_eigen_vector(const Eigen::VectorXd& vec){}
 
 /*
 class Array{
@@ -805,10 +822,7 @@ private:
 
 
 
-void Array::require_square_matrix(const char* operation) const;
-Eigen::MatrixXd Array::to_eigen_matrix(void) const;
-Array Array::from_eigen_matrix(const Eigen::MatrixXd& matrix);
-Array Array::from_eigen_vector(const Eigen::VectorXd& vec);
+
 
 Shape Array::broadcast_shape(const Shape& a, const Shape& b);
 Shape Array::broadcast_strides(const Shape& shape, const Shape& strides);
