@@ -1391,15 +1391,16 @@ Array Array::reduce_axis(int axis, BinaryFn&& op) const{
     }
 }
 
+// - Apply a function to each element; returns same shape
+Array Array::apply(UnaryFn&& fn) const{
+    return this->apply_unary(std::move(fn));
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
-
-
-// - Apply a function to each element; returns same shape
-Array Array::apply(auto&& fn) const;
 
 
 // -----------
