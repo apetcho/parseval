@@ -1265,8 +1265,11 @@ Array Array::asinh(void) const{
     return this->apply_unary([](value_type x){ return std::asinh(x); });
 }
 
+// -
+Array Array::atanh(void) const{
+    return this->apply_unary([](value_type x){ return std::atanh(x); });
+}
 
-Array Array::atanh(void) const{}
 Array Array::exp(void) const{}
 Array Array::log(void) const{}
 Array Array::sqrt(void) const{}
