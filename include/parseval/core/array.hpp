@@ -25,11 +25,11 @@ namespace parseval{
 class ParsevalError : public std::runtime_error{
 public:
     ParsevalError()
-    : std::runtime_error("ParsevalError: unknown error caugth")
+    : std::runtime_error("unknown error caugth")
     {}
 
     explicit ParsevalError(const char* msg)
-    : std::runtime_error(std::string("ParsevalError: ") + msg)
+    : std::runtime_error(msg)
     {}
 
     explicit ParsevalError(const std::string& msg)

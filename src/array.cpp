@@ -685,6 +685,15 @@ Array Array::elementwise_scalar(value_type scalar, ScalarOp&& func) const{
     return result;
 }
 
+// -------------------------------------------------
+// -*- Utility method for handling Eigen library -*-
+// -------------------------------------------------
+
+void Array::require_matrix(const char* operation) const{
+    if(this->ndim() != 2){
+        throw ParsevalError(" requires a two-dimensional array");
+    }
+}
 
 
 /*
@@ -795,8 +804,7 @@ private:
     static constexpr std::size_t parallel_threshold = 4096;
 
 
-// utility method for handling Eigen library
-void Array::require_matrix(const char* operation) const;
+
 void Array::require_square_matrix(const char* operation) const;
 Eigen::MatrixXd Array::to_eigen_matrix(void) const;
 Array Array::from_eigen_matrix(const Eigen::MatrixXd& matrix);
