@@ -1108,14 +1108,59 @@ Array Array::elementwise_binary_broadcast(
     return result;
 }
 
+// -
+// 1D slice: [start, stop) with step
+Array Array::slice(std::size_t start, std::size_t stop, std::size_t step) const{
+    if(this->ndim() != 1){
+        throw ParsevalError("Error while calling `slice()` for 1D array.");
+    }
+
+    if(step==0){
+        throw ParsevalError("`slice()`: step cannot be zero");
+    }
+
+    const std::size_t n = this->m_shape[0];
+    if(start >= n){
+        return Array({0}); // empty array is returned
+    }
+
+    // Normalize
+    stop = stop==0 ? n : stop;
+    if(start > stop){
+        return Array({0}); // empty array is returned
+    }
+
+    std::size_t count = (stop - start + step - 1)/ step;
+    if(count==0){
+        return Array({0});
+    }
+
+    if(count > n){
+        count = (stop - start + step - 1) / step;
+        if(count == 0){
+            return Array({0});
+        }
+    }
+
+    // Compute actual count
+    for(std::size_t i=start; i < stop; i+= step){
+        ++count;
+    }
+    Array result({count});
+    std::size_t j=0;
+    for(std::size_t i=start; i < stop && i < n; i+= step){
+        result.m_data[j++] = this->m_data[i];
+    }
+
+    return result;
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-// 1D slice: [start, stop) with step
-Array Array::slice(std::size_t start, std::size_t stop, std::size_t step=1) const;
 
 // 2D slice: rows [r_start, r_stop), cols [c_start, c_stop) with step
 Array Array::slice(
