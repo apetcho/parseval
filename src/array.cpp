@@ -1235,7 +1235,12 @@ Array Array::asin(void) const{
     return this->apply_unary([](value_type x){ return std::asin(x); });
 }
 
-Array Array::atan(void) const{}
+// 
+Array Array::atan(void) const{
+    return this->apply_unary([](value_type x){ return std::atan(x); });
+}
+
+
 Array Array::cosh(void) const{}
 Array Array::sinh(void) const{}
 Array Array::tanh(void) const{}
