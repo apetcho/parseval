@@ -1255,7 +1255,11 @@ Array Array::tanh(void) const{
     return this->apply_unary([](value_type x){ return std::tanh(x); });
 }
 
-Array Array::acosh(void) const{}
+// -
+Array Array::acosh(void) const{
+    return this->apply_unary([](value_type x){ return std::acosh(x); });
+}
+
 Array Array::asinh(void) const{}
 Array Array::atanh(void) const{}
 Array Array::exp(void) const{}
