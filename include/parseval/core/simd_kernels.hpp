@@ -71,9 +71,6 @@ static inline void simd_mul(
     }
 }
 
-// Optimized Matrix Multiplication with Blocking (Tilin)
-// Blocks size 64x64 is a good heuristic for L1/L2 cache
-static constexpr std::size_t TILE_SIZE = 64;
 
 Array matmul_optimized(const Array& lhs, const Array& rhs);
 
