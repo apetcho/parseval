@@ -1220,7 +1220,11 @@ Array Array::sin(void) const{
     return this->apply_unary([](value_type x){ return std::sin(x); });
 }
 
-Array Array::tan(void) const{}
+// -
+Array Array::tan(void) const{
+    return this->apply_unary([](value_type x){ return std::tan(x); });
+}
+
 Array Array::acos(void) const{}
 Array Array::asin(void) const{}
 Array Array::atan(void) const{}
