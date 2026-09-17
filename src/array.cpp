@@ -774,11 +774,36 @@ void Array::svd(Array& u, Array& singular_values, Array& vt) const{
         Eigen::ComputeThinU | Eigen::ComputeThinV
     );
 
-    u = this->from_eigen_matrix(decomposition.matrixU());
+    u = Array::from_eigen_matrix(decomposition.matrixU());
     singular_values = this->from_eigen_vector(decomposition.singularValues());
-    vt = this->from_eigen_matrix(decomposition.matrixV().transpose());
+    vt = Array::from_eigen_matrix(decomposition.matrixV().transpose());
 }
 
+// -
+void Array::qr(Array& q, Array& r) const{
+    this->require_matrix("qr");
+
+    auto matrix = this->to_eigen_matrix();
+    Eigen::HouseholderQR<Eigen::MatrixXd> decomposition(matrix);
+    const Eigen::Index rows = matrix.rows();
+    const Eigen::Index cols = matrix.cols();
+
+    Eigen::MatrixXd q_matrix = (
+        decomposition.householderQ() *
+        Eigen::MatrixXd::Identity(rows, cols)
+    );
+
+    Eigen::MatrixXd r_matrix = Eigen::MatrixXd::Zero(rows, cols);
+    const Eigen::MatrixXd qr_matrix = decomposition.matrixQR();
+    for(Eigen::Index row=0; row < rows; ++row){
+        for(Eigen::Index col=row; col < cols; ++col){
+            r_matrix(row, col) = qr_matrix(row, col);
+        }
+    }
+
+    q = Array::from_eigen_matrix(q_matrix);
+    r = Array::from_eigen_matrix(r_matrix);
+}
 
 /*
 class Array{
@@ -787,8 +812,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-
-void Array::qr(Array& q, Array& r) const{}
 void Array::lu(Array& l, Array& u) const{}
 void Array::cholesky(void) const{}
 void Array::eigen(Array& eigenValues, Array& eigenVectors) const{}
