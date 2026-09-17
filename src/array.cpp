@@ -7,9 +7,10 @@
 #include<Eigen/SVD>
 
 #include<algorithm>
+#include<sstream>
+#include<fstream>
 #include<numeric>
 #include<utility>
-#include<sstream>
 #include<cmath>
 
 // --------------------------------------------------------------------
@@ -1396,6 +1397,28 @@ Array Array::apply(UnaryFn&& fn) const{
     return this->apply_unary(std::move(fn));
 }
 
+
+// -------------------
+// -*- I/O Methods -*-
+// -------------------
+void Array::save_text(const std::string& path) const{
+    std::ofstream fout(path);
+    if(!fout){
+        throw ParsevalError("Unable to open file for writing: " + path);
+    }
+    fout << "shape: ";
+    for(std::size_t i=0; i < this->m_shape.size(); ++i){
+        if(i > 0){ fout << ", "; }
+        fout << this->m_shape[i];
+    }
+    fout << "\n";
+    for(const auto& val: this->m_data){
+        fout << val << "\n";
+    }
+}
+
+Array Array::load_text(const std::string& path){}
+
 /*
 class Array{
 public:
@@ -1403,11 +1426,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-// -----------
-// -*- I/O -*-
-// -----------
-void Array::save_text(const std::string& path) const;
-Array Array::load_text(const std::string& path);
+
 void Array::save_binary(const std::string& path) const;
 Array Array::load_binary(const std::string& path);
 void Array::save_csv(const std::string& path, char delimiter=',') const;
