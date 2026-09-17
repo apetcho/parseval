@@ -1553,9 +1553,59 @@ void Array::save_csv(const std::string& path, char delimiter) const{
         }
         fout << "\n";
     }
+    fout.close();
 }
 
-Array Array::load_csv(const std::string& path, char delimiter){}
+// -
+Array Array::load_csv(const std::string& path, char delimiter){
+    std::ifstream fin(path);
+    if(!fin){
+        throw ParsevalError("Unable to open CSV file for reading: " + path);
+    }
+
+    std::vector<std::vector<Array::value_type>> rows;
+    std::string line{};
+    while(std::getline(fin, line)){
+        if(line.empty()){ continue;}
+        std::vector<Array::value_type> row;
+        std::istringstream stream(line);
+        std::string token;
+        while(std::getline(stream, token, delimiter)){
+            row.push_back(std::stod(token));
+        }
+        if(!row.empty()){
+            rows.push_back(std::move(row));
+        }
+    }
+
+    if(rows.empty()){
+        fin.close();
+        return Array({0, 0}); // empty matrix
+    }
+
+    const std::size_t nr = rows.size();
+    const std::size_t nc = rows[0].size();
+    if(nc==0){
+        fin.close();
+        return Array({nr, 0});
+    }
+
+    for(const auto& row: rows){
+        if(row.size() != nc){
+            fin.close();
+            throw ParsevalError("Inconsistent CSV row lengths");
+        }
+    }
+
+    std::vector<Array::value_type> data{};
+    data.reserve(nr * nc);
+    for(const auto& row: rows){
+        data.insert(data.end(), row.begin(), row.end());
+    }
+
+    fin.close();
+    return Array({nr, nc}, std::move(data));
+}
 
 /*
 class Array{
