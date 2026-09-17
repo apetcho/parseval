@@ -977,8 +977,17 @@ Array::Shape Array::broadcast_strides(const Array::Shape& shape, const Array::Sh
     return my_shape;
 }
 
-
-std::string Array::to_string(const Array::Shape& shape){}
+// -
+std::string Array::to_string(const Array::Shape& shape){
+    std::stringstream ss;
+    ss << "[";
+    for(std::size_t i=0; i < shape.size(); ++i){
+        if(i > 0){ ss << ", "; }
+        ss << std::to_string(shape[i]);
+    }
+    ss << "]";
+    return ss.str();
+}
 
 /*
 class Array{
