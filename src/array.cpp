@@ -1300,6 +1300,22 @@ Array Array::abs(void) const{
     return this->apply_unary([](value_type x){ return std::abs(x); });
 }
 
+// -
+Array Array::apply_unary(UnaryFn&& fn) const{
+    Array result(this->m_shape);
+
+    this->parallel_for(
+        this->size(),
+        [this, &result, fn](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                result.m_data[i] = fn(this->m_data[i]);
+            }
+        }
+    );
+
+    return result;
+}
+
 /*
 class Array{
 public:
@@ -1365,14 +1381,9 @@ private:
     static constexpr std::size_t parallel_threshold = 4096;
 
 
-//template<typename Operation>
-
-
-template<typename UnaryOp>
-Array Array::apply_unary(UnaryOp&& op) const;
 
 template<typename BinarOp>
-Array Array::elementwise_binary_broad_cast(
+Array Array::elementwise_binary_broadcast(
     const Array& other, BinarOp op
 ) const;
 
