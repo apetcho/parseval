@@ -863,6 +863,32 @@ void Array::eigen(Array& eigenValues, Array& eigenVectors) const{
     eigenVectors = Array::from_eigen_matrix(decomposition.eigenvectors());
 }
 
+// -
+Array Array::diag(void) const{
+    if(this->ndim() == 1){
+        const std::size_t n = this->m_shape[0];
+        Array result(Array::Shape{n, n}, 0.0);
+
+        for(std::size_t i=0; i < n; i++){
+            result(i, i) = this->m_data[i];
+        }
+
+        return result;
+    }
+
+    if(this->ndim() == 2){
+        const std::size_t n = std::min(this->m_shape[0], this->m_shape[1]);
+
+        Array result(Array::Shape{n}, 0.0);
+        for(std::size_t i=0; i < n; ++i){
+            result(i) = (*this)(i, i);
+        }
+
+        return result;
+    }
+
+    throw ParsevalError("diag require one- or two-dimensional array");
+}
 
 /*
 class Array{
@@ -871,7 +897,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-Array Array::diag(void) const;
 std::size_t Array::rank(double tolerance=1e-12) const;
 value_type Array::det(void) const;
 Array Array::inverse(void) const;
