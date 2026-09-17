@@ -1112,7 +1112,7 @@ Array Array::elementwise_binary_broadcast(
 // 1D slice: [start, stop) with step
 Array Array::slice(std::size_t start, std::size_t stop, std::size_t step) const{
     if(this->ndim() != 1){
-        throw ParsevalError("Error while calling `slice()` for 1D array.");
+        throw ParsevalError("`slice()`: expected array to be one-dimensional.");
     }
 
     if(step==0){
@@ -1155,20 +1155,64 @@ Array Array::slice(std::size_t start, std::size_t stop, std::size_t step) const{
     return result;
 }
 
+// -
+// 2D slice: rows [r_start, r_stop), cols [c_start, c_stop) with step
+Array Array::slice(
+    std::size_t r_start, std::size_t r_stop,
+    std::size_t c_start, std::size_t c_stop,
+    std::size_t r_step, std::size_t c_step
+) const{
+    if(this->ndim() != 2){
+        throw ParsevalError("`slice()`: expected array to be two-dimensional.");
+    }
+
+    if(r_step==0 || c_step==0){
+        throw ParsevalError("`slice()`: step cannot be zero.");
+    }
+
+    const std::size_t rows = this->m_shape[0];
+    const std::size_t cols = this->m_shape[1];
+
+    if(r_start >= rows){
+        return Array({0, 0});   // empty matrix is returned
+    }
+
+    if(c_start >= cols){
+        return Array({0, 0});   // return an empty matrix
+    }
+
+    std::size_t r_count = 0;
+    for(std::size_t i=r_start; i < r_stop && i < rows; i += r_step){
+        ++r_count;
+    }
+
+    std::size_t c_count = 0;
+    for(std::size_t i=c_start; i < c_stop && i < cols; i += c_step){
+        ++c_count;
+    }
+
+    if(r_count==0 || c_count==0){
+        return Array({0, 0});
+    }
+
+    Array result({r_count, c_count});
+    std::size_t r = 0;
+    for(std::size_t i=r_start; i < r_stop && i < rows; i += r_step){
+        std::size_t c = 0;
+        for(std::size_t j=c_start; j < c_stop && j < cols; j +=c_step){
+            result(r, c++) = (*this)(i, j);
+        }
+        ++r;
+    }
+
+    return result;
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
-
-
-// 2D slice: rows [r_start, r_stop), cols [c_start, c_stop) with step
-Array Array::slice(
-    std::size_t r_start, std::size_t r_stop,
-    std::size_t c_start, std::size_t c_stop,
-    std::size_t r_step=1, std::size_t c_step=1
-) const;
-
 
 // - Math function as method
 Array Array::cos(void) const;
