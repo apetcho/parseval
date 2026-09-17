@@ -9,6 +9,7 @@
 #include<algorithm>
 #include<numeric>
 #include<utility>
+#include<sstream>
 #include<cmath>
 
 // --------------------------------------------------------------------
@@ -934,6 +935,40 @@ Array::value_type Array::trace(void) const{
     return result;
 }
 
+// -
+Array::Shape Array::broadcast_shape(const Array::Shape& a, const Array::Shape& b){
+    if(a.empty() && b.empty()){
+        return {};
+    }
+
+    const std::size_t na = a.size();
+    const std::size_t nb = b.size();
+    const std::size_t nd = std::max(na, nb);
+
+    Shape result(nd);
+
+    for(std::size_t i=0; i < nd; ++i){
+        std::size_t a_dim = (na > 0) ? a[na - 1 - i] : 1;
+        std::size_t b_dim = (nb > 0) ? b[nb - 1 - i] : 1;
+
+        if(a_dim==1 || b_dim==1 || a_dim==b_dim){
+            result[nd - 1 - i] = std::max(a_dim, b_dim);
+        }else{
+            std::stringstream ss;
+            ss << "Shapes " << Array::to_string(a);
+            ss << " and " << Array::to_string(b) << " are not broadcastable";
+
+            throw ParsevalError(ss.str());
+        }
+    }
+
+    return result;
+}
+
+
+Array::Shape Array::broadcast_strides(const Array::Shape& shape, const Array::Shape& strides){}
+std::string Array::to_string(const Array::Shape& shape){}
+
 /*
 class Array{
 public:
@@ -1028,13 +1063,6 @@ private:
 
     static constexpr std::size_t parallel_threshold = 4096;
 
-
-
-
-
-Shape Array::broadcast_shape(const Shape& a, const Shape& b);
-Shape Array::broadcast_strides(const Shape& shape, const Shape& strides);
-std::string Array::to_string(const Shape& shape);
 
 template<typename Operation>
 Array Array::elementwise_binary_broadcast(
