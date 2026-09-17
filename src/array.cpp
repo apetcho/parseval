@@ -1245,7 +1245,11 @@ Array Array::cosh(void) const{
     return this->apply_unary([](value_type x){ return std::cosh(x); });
 }
 
-Array Array::sinh(void) const{}
+// -
+Array Array::sinh(void) const{
+    return this->apply_unary([](value_type x){ return std::sinh(x); });
+}
+
 Array Array::tanh(void) const{}
 Array Array::acosh(void) const{}
 Array Array::asinh(void) const{}
