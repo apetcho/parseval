@@ -1701,7 +1701,78 @@ void Array::save_sqlite(
 }
 
 
-Array Array::load_sqlite(const std::string& path, const std::string& table_prefix){}
+Array Array::load_sqlite(const std::string& path, const std::string& table_prefix){
+    std::string table_name = table_prefix + "_array";
+
+    sqlite3* db = nullptr;
+
+    auto status = sqlite3_open_v2(
+        path.c_str(), &db, SQLITE_OPEN_READONLY, nullptr
+    );
+    if(status != SQLITE_OK){
+        std::stringstream ss;
+        ss << "SQLite open failed: " << sqlite3_errmsg(db);
+        throw ParsevalError(ss.str());
+    }
+
+    std::string query = "SELECT row, col, value FROM " + table_name +
+        " ORDER BY row, col;";
+    
+    sqlite3_stmt* stmt;
+    status = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    if(status != SQLITE_OK){
+        sqlite3_close(db);
+        std::stringstream ss;
+        ss << "SQLite prepare failed: " << sqlite3_errmsg(db);
+        throw ParsevalError(ss.str());
+    }
+
+    std::vector<std::tuple<std::size_t, std::size_t, Array::value_type>> cells{};
+    while(sqlite3_step(stmt) == SQLITE_ROW){
+        auto r = static_cast<std::size_t>(sqlite3_column_int64(stmt, 0));
+        auto c = static_cast<std::size_t>(sqlite3_column_int64(stmt, 1));
+        auto val = static_cast<Array::value_type>(sqlite3_column_double(stmt,2));
+        cells.emplace_back(r, c, val);
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    if(cells.empty()){
+        return Array({0, 0});
+    }
+
+    // Determine shape
+    std::size_t nrow = 0;
+    std::size_t ncol = 0;
+    for(const auto& cell: cells){
+        nrow = std::max(nrow, std::get<0>(cell));
+        ncol = std::max(ncol, std::get<1>(cell));
+    }
+
+    // If ncol == 0, it's 1D
+    auto is_1d = (ncol == 0);
+    Shape shape{};
+    if(is_1d){
+        shape = {nrow+1};
+    }else{
+        shape = {nrow+1, ncol+1};
+    }
+
+    Array result(shape);
+    for(const auto& cell: cells){
+        std::size_t r = std::get<0>(cell);
+        std::size_t c = std::get<1>(cell);
+        Array::value_type val = std::get<2>(cell);
+        if(is_1d){
+            result(r) = val;
+        }else{
+            result(r, c) = val;
+        }
+    }
+
+    return result;
+}
 
 /*
 class Array{
