@@ -1279,13 +1279,22 @@ Array Array::exp(void) const{
 Array Array::log(void) const{
     return this->apply_unary([](value_type x){
         if(x <= 0.0){
-            throw ParsevalError("log requires positive values.");
+            throw ParsevalError("`log` requires positive values.");
         }
         return std::log(x);
     });
 }
 
-Array Array::sqrt(void) const{}
+// -
+Array Array::sqrt(void) const{
+    return this->apply_unary([](value_type x){
+        if(x < 0.0){
+            throw ParsevalError("`sqrt` requires non-negative values");
+        }
+        return std::sqrt(x);
+    });
+}
+
 Array Array::abs(void) const{}
 
 /*
