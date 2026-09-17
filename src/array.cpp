@@ -841,13 +841,35 @@ Array Array::cholesky(void) const{
     return Array::from_eigen_matrix(decomposition.matrixL());
 }
 
+// -
+void Array::eigen(Array& eigenValues, Array& eigenVectors) const{
+    this->require_square_matrix("eigen");
+
+    const Eigen::MatrixXd matrix = this->to_eigen_matrix();
+
+    constexpr double symmetry_tolerance = 1e-12;
+
+    if(!matrix.isApprox(matrix.transpose(), symmetry_tolerance)){
+        throw ParsevalError("eigen currently require a real symmetrix matrix");
+    }
+
+    Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> decomposition(matrix);
+
+    if(decomposition.info() != Eigen::Success){
+        throw ParsevalError("Eigenvalue decomposition failed");
+    }
+
+    eigenValues = Array::from_eigen_vector(decomposition.eigenvalues());
+    eigenVectors = Array::from_eigen_matrix(decomposition.eigenvectors());
+}
+
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
 
-void Array::eigen(Array& eigenValues, Array& eigenVectors) const{}
 
 Array Array::diag(void) const;
 std::size_t Array::rank(double tolerance=1e-12) const;
