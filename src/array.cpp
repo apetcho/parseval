@@ -763,6 +763,23 @@ Array Array::from_eigen_vector(const Eigen::VectorXd& vec){
     );
 }
 
+// ----------------------------
+// -*- Matrix Decomposition -*-
+// ----------------------------
+void Array::svd(Array& u, Array& singular_values, Array& vt) const{
+    this->require_matrix("svd");
+    const auto matrix = this->to_eigen_matrix();
+    Eigen::JacobiSVD<Eigen::MatrixXd> decomposition(
+        matrix,
+        Eigen::ComputeThinU | Eigen::ComputeThinV
+    );
+
+    u = this->from_eigen_matrix(decomposition.matrixU());
+    singular_values = this->from_eigen_vector(decomposition.singularValues());
+    vt = this->from_eigen_matrix(decomposition.matrixV().transpose());
+}
+
+
 /*
 class Array{
 public:
@@ -770,12 +787,11 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-// -
-void Array::svd(Array& u, Array& singular_values, Array& vt) const;
-void Array::qr(Array& q, Array& r) const;
-void Array::lu(Array& l, Array& u) const; //
-void Array::cholesky(void) const;
-void Array::eigen(Array& eigenValues, Array& eigenVectors) const;
+
+void Array::qr(Array& q, Array& r) const{}
+void Array::lu(Array& l, Array& u) const{}
+void Array::cholesky(void) const{}
+void Array::eigen(Array& eigenValues, Array& eigenVectors) const{}
 
 Array Array::diag(void) const;
 std::size_t Array::rank(double tolerance=1e-12) const;
