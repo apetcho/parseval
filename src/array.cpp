@@ -1341,7 +1341,17 @@ bool Array::any(UnaryPredicate&& predicate) const{
     return result;
 }
 
-bool Array::all(UnaryPredicate&& predicate) const{}
+bool Array::all(UnaryPredicate&& predicate) const{
+    bool result{true};
+    for(const auto& x: this->m_data){
+        if(!predicate(x)){
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+}
 
 /*
 class Array{
