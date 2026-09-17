@@ -471,9 +471,14 @@ Array& Array::operator-=(const Array& other){
 Array& Array::operator*=(const Array& other){
     this->validate_same_shape(other);
 
-    for(std::size_t i=0; i < this->size(); ++i){
-        this->m_data[i] *= other.m_data[i];
-    }
+    this->parallel_for(
+        this->size(),
+        [this, &other](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                this->m_data[i] *= other.m_data[i];
+            }
+        }
+    );
 
     return *this;
 }
