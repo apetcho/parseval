@@ -625,6 +625,24 @@ void Array::parallel_for(
     }
 }
 
+// -
+template<typename BinaryOp>
+Array Array::elementwise_binary(const Array& other, BinaryOp&& func) const{
+    this->validate_same_shape(other);
+
+    Array result(this->m_shape);
+    this->parallel_for(
+        this->size(),
+        [this, &other, &result, operation](std::size_t begin, std::size_t end){
+            for(std::size_t i=begin; i < end; ++i){
+                result.m_data[i] = func(this->m_data[i], other.m_data[i]);
+            }
+        }
+    );
+
+    return result;
+}
+
 
 /*
 class Array{
@@ -731,14 +749,10 @@ private:
     std::vector<value_type> m_data;
     std::map<std::string, std::string> m_attributes; // Key-value pairs for metadata
 
-
-
-
     static constexpr std::size_t parallel_threshold = 4096;
 
 
-template<typename Operation>
-Array Array::elementwise_binary(const Array& other, Operation&& operation) const;
+
 
 template<typename Operation>
 Array Array::elementwise_scalar(value_type scalar, Operation&& operation) const;
