@@ -11,6 +11,7 @@
 #include<fstream>
 #include<numeric>
 #include<utility>
+#include<cctype>
 #include<cmath>
 
 // --------------------------------------------------------------------
@@ -1417,7 +1418,62 @@ void Array::save_text(const std::string& path) const{
     }
 }
 
-Array Array::load_text(const std::string& path){}
+// -
+Array Array::load_text(const std::string& path){
+    std::ifstream fin(path);
+    if(!fin){
+        throw ParsevalError("Unable to open file for reading: " + path);
+    }
+
+    std::string line;
+    if(!std::getline(fin, line)){
+        fin.close();
+        throw ParsevalError("Empty file");
+    }
+
+    // Parse shape
+    std::vector<std::string> parts{};
+    {
+        std::istringstream stream(line);
+        std::string token;
+        std::getline(stream, token, ':');   // skip "shape"
+        std::getline(stream, token);        // rest
+        std::istringstream info(token);
+        std::string text{};
+        while(std::getline(info, text, ',')){
+            // trim spaces
+            std::string numstr;
+            for(char c: text){
+                if(!std::isspace(static_cast<unsigned char>(c))){
+                    numstr += c;
+                }
+            }
+            if(!numstr.empty()){
+                parts.push_back(numstr);
+            }
+        }
+    }
+
+    Shape shape{};
+    shape.reserve(parts.size());
+    for(const auto& p: parts){
+        shape.push_back(std::stoull(p));
+    }
+
+    std::vector<value_type> data;
+    value_type val{};
+    while(fin >> val){
+        data.push_back(val);
+    }
+
+    if(Array::product(shape) != data.size()){
+        fin.close();
+        throw ParsevalError("Data size does not match shape");
+    }
+
+    return Array(std::move(shape), std::move(data));
+}
+
 
 /*
 class Array{
