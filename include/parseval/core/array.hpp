@@ -3,8 +3,9 @@
 #include<map>
 #include<vector>
 #include<string>
-#include<stdexcept>
 #include<iostream>
+#include<stdexcept>
+#include<functional>
 #include<initializer_list>
 
 #include<Eigen/Core>
@@ -37,6 +38,10 @@ class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
+
+    using BinaryFn = std::function<value_type(value_type, value_type)>;
+    using UnaryFn = std::function<value_type(value_type)>;
+    using UnaryPredicate = std::function<bool(value_type)>;
 
     // Contructors
     Array() = default;
@@ -156,10 +161,10 @@ public:
     Array abs(void) const;
 
 
-    Array map(auto&& fn) const;
-    Array map(const Array& other, auto&& fn) const;
-    Array any(int axis=-1) const;
-    Array all(int axis=-1) const;
+    Array map(UnaryFn&& fn) const;
+    Array map(const Array& other, BinaryFn&& fn) const;
+    Array any(UnaryPredicate&& fn) const;
+    Array all(UnaryPredicate&& fn) const;
     // Apply a function to each element; returns same shape
     Array apply(auto&& fn) const;
 
@@ -242,17 +247,17 @@ private:
     static Shape broadcast_strides(const Shape& shape, const Shape& strides);
     static std::string to_string(const Shape& shape);
 
-    template<typename Operation>
+    //template<typename Operation>
     Array elementwise_binary_broadcast(
-        const Array& other, Operation&& op
+        const Array& other, BinaryFn&& fn
     ) const;
 
-    template<typename UnaryOp>
-    Array apply_unary(UnaryOp&& op) const;
+    //template<typename UnaryOp>
+    Array apply_unary(UnaryFn&& fn) const;
 
-    template<typename BinarOp>
+    //template<typename BinarOp>
     Array elementwise_binary_broad_cast(
-        const Array& other, BinarOp op
+        const Array& other, BinaryFn&& fn
     ) const;
 
     Array reduce_axis(int axis, auto&& op) const;

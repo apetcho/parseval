@@ -989,12 +989,107 @@ std::string Array::to_string(const Array::Shape& shape){
     return ss.str();
 }
 
+// -
+Array Array::elementwise_binary_broadcast(
+    const Array& other, Array::BinaryFn&& fn
+) const{
+    // -
+    const Shape out_shape = this->broadcast_shape(this->m_shape, other.m_shape);
+    const Shape out_strides = this->broadcast_strides(out_shape, {});
+
+    Array result(out_shape);
+
+    // We'll iterate over the output linear index and map to both operands
+    const std::size_t out_size = this->product(out_shape);
+
+    // Parallel over output elements
+    this->parallel_for(
+        out_size,
+        [this, &other, &result, fn, out_shape, out_strides](
+            std::size_t begin, std::size_t end
+        ){
+            for(std::size_t idx=begin; idx < end; ++idx){
+                // Convert linear index to multi-index in output
+                Shape out_idx(out_shape.size());
+                {
+                    std::size_t temp = idx;
+                    for(std::size_t i=out_shape.size(); i > 0; i--){
+                        out_idx[i] = temp % out_shape[i];
+                        temp /= out_shape[i];
+                    }
+                }
+
+                // Map to a-indices and b-indices using broadcasting
+                Shape a_idx(this->m_shape.size());
+                Shape b_idx(other.m_shape.size());
+
+                // Align trailing dimensions
+                const std::size_t start_a = std::max(
+                    0,
+                    static_cast<int>(out_shape.size()) - static_cast<int>(this->m_shape.size())
+                );
+                const std::size_t start_b = std::max(
+                    0,
+                    static_cast<int>(out_shape.size()) - static_cast<int>(other.m_shape.size())
+                );
+
+                for(std::size_t i=0; i < out_shape.size(); ++i){
+                    const std::size_t out_dim = out_shape[i];
+                    const std::size_t out_stride = out_strides[i];
+
+                    // Compute index in output
+                    // (We already have out_idx[i])
+
+                    // Map to a
+                    if(i >= start_a){
+                        const std::size_t a_dim_idx = i - start_a;
+                        if(this->m_shape.size() == 0){
+                            a_idx.clear();
+                        }else{
+                            a_idx[a_dim_idx] = out_idx[i] % (this->m_shape[a_dim_idx]);
+                        }
+                    }
+
+                    // Map to b
+                    if(i >= start_b){
+                        const std::size_t b_dim_idx = i - start_b;
+                        if(other.m_shape.size()==0){
+                            b_idx.clear();
+                        }else{
+                            b_idx[b_dim_idx] = out_idx[i] % (other.m_shape[b_dim_idx]);
+                        }
+                    }
+                }
+
+                // Compute linear offsets
+                std::size_t a_off = 0;
+                for(std::size_t i=0; i < this->m_shape.size(); ++i){
+                    a_off += a_idx[i] * this->m_strides[i];
+                }
+
+                std::size_t b_off = 0;
+                for(std::size_t i=0; i < other.m_shape.size(); ++i){
+                    b_off += b_idx[i] * other.m_strides[i];
+                }
+
+                std::size_t r_off = 0;
+                for(std::size_t i=0; i < out_shape.size(); ++i){
+                    r_off += out_idx[i] * out_strides[i];
+                }
+
+                result.m_data[r_off] = fn(this->m_data[a_off], other.m_data[b_off]);
+            }
+        }
+    );
+
+    return result;
+}
+
 /*
 class Array{
 public:
     using value_type = double;
     using Shape = std::vector<std::size_t>;
-
 
 // 1D slice: [start, stop) with step
 Array Array::slice(std::size_t start, std::size_t stop, std::size_t step=1) const;
@@ -1084,10 +1179,8 @@ private:
     static constexpr std::size_t parallel_threshold = 4096;
 
 
-template<typename Operation>
-Array Array::elementwise_binary_broadcast(
-    const Array& other, Operation&& op
-) const;
+//template<typename Operation>
+
 
 template<typename UnaryOp>
 Array Array::apply_unary(UnaryOp&& op) const;
