@@ -118,7 +118,7 @@ public:
     void eigen(Array& eigenValues, Array& eigenVectors) const;
 
     Array diag(void) const;
-    std::size_t rank(double tolerance=1e-12) const;
+    std::size_t rank(void) const;
     value_type det(void) const;
     Array inverse(void) const;
     value_type trace(void) const;

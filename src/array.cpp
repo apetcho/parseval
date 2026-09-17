@@ -890,6 +890,17 @@ Array Array::diag(void) const{
     throw ParsevalError("diag require one- or two-dimensional array");
 }
 
+// -
+std::size_t Array::rank(void) const{
+    this->require_matrix("rank");
+
+    const Eigen::MatrixXd matrix = this->to_eigen_matrix();
+
+    Eigen::JacobiSVD<Eigen::MatrixXd> decomposition(matrix);
+
+    return static_cast<std::size_t>(decomposition.rank());
+}
+
 /*
 class Array{
 public:
@@ -897,7 +908,6 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-std::size_t Array::rank(double tolerance=1e-12) const;
 value_type Array::det(void) const;
 Array Array::inverse(void) const;
 value_type Array::trace(void) const;
