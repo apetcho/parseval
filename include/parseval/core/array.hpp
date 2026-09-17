@@ -113,7 +113,7 @@ public:
 
     void svd(Array& u, Array& singular_values, Array& vt) const;
     void qr(Array& q, Array& r) const;
-    void lu(Array& l, Array& u) const; //
+    void lu(Array& l, Array& u, Array& p) const; //
     void cholesky(void) const;
     void eigen(Array& eigenValues, Array& eigenVectors) const;
 

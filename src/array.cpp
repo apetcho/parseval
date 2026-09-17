@@ -805,6 +805,26 @@ void Array::qr(Array& q, Array& r) const{
     r = Array::from_eigen_matrix(r_matrix);
 }
 
+// -
+void Array::lu(Array& l, Array& u, Array& p) const{
+    this->require_square_matrix("lu");
+    const Eigen::MatrixXd matrix = this->to_eigen_matrix();
+
+    Eigen::PartialPivLU<Eigen::MatrixXd> decomposition(matrix);
+
+    const Eigen::Index n = matrix.rows();
+    // const Eigen::MatrixXd packed = decomposition.matrixLU();
+    Eigen::MatrixXd l_matrix = Eigen::MatrixXd::Identity(n, n);
+    l_matrix.triangularView<Eigen::Lower>() = decomposition.matrixLU();
+    Eigen::MatrixXd u_matrix = decomposition.matrixLU().triangularView<Eigen::Upper>();
+
+    Eigen::MatrixXd p_matrix = decomposition.permutationP();
+
+    l = Array::from_eigen_matrix(l_matrix);
+    u = Array::from_eigen_matrix(u_matrix);
+    p = Array::from_eigen_matrix(p_matrix);
+}
+
 /*
 class Array{
 public:
@@ -812,7 +832,7 @@ public:
     using Shape = std::vector<std::size_t>;
 
 
-void Array::lu(Array& l, Array& u) const{}
+
 void Array::cholesky(void) const{}
 void Array::eigen(Array& eigenValues, Array& eigenVectors) const{}
 
