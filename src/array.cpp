@@ -1789,7 +1789,11 @@ std::string Array::get_attribute(const std::string& name) const{
     return "";  // or throw an exception
 }
 
-bool Array::has_attribute(const std::string& name) const{}
+// -
+bool Array::has_attribute(const std::string& name) const{
+    return this->m_attributes.find(name) != this->m_attributes.end();
+}
+
 const std::map<std::string, std::string>& Array::attributes(void) const{}
 
 
