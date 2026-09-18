@@ -85,3 +85,7 @@ message(STATUS "  PARSEVAL_FETCH_MISSING_DEPS = ${PARSEVAL_FETCH_MISSING_DEPS}")
 # Core library target 
 # -------------------------------------------------------------------
 add_subdirectory(src)
+
+if(PARSEVAL_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
