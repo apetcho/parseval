@@ -119,5 +119,73 @@ if(PARSEVAL_ENABLE_SQLITE3)
 
     target_link_libraries(parseval PRIVATE SQLite::SQLite3)
     target_compile_definitions(parseval PRIVATE PARSEVAL_WITH_SQLITE3)
-    list(APPEND PARSEVAL_INSTALLED_DEPENDENCIES "find_package(SQLite3)")
+    list(APPEND PARSEVAL_INSTALLED_DEPENDENCIES "find_dependency(SQLite3)")
+endif()
+
+# -------------------------------------------------------------------
+# NetCDF-C++4 (required: array I/O backend)
+# -------------------------------------------------------------------
+if(PARSEVAL_ENABLE_NETCDF)
+    find_package(netCDFCxx QUIET)
+    find_package(NetCDFCxx QUIET)
+
+    if(NOT TARGET NetCDF::netcdf-cxx4)
+        parseval_warn_or_fail("netcdf-cxx4")
+
+        if(PARSEVAL_FETCH_MISSING_DEPS)
+            # netcdf-cxx4 itself needs the C library (libnetcdf) available one
+            # the system; that one is intentionally left to the platform package
+            # manage (apt/brew/vcpkg) rather than FetchContent, since it has heavy,
+            # platform-specific dependency (HDF5, zlib).
+            find_package(netCDF QUIET)
+            if(NOT netCDF_FOUND)
+                message(FATAL_ERROR
+                    "NetCDF-C (libnetcdf) was not found and cannot be fetched "
+                    "automatically because of its own native/HDF5 dependencies. "
+                    "Install it via your package manager (e.g. 'apt install libnetcdf-dev',"
+                    " 'brew install netcdf') and reconfigure, or run with "
+                    "-DPARSEVAL_ENBALE_NETCDF=OFF."
+                )
+            endif()
+
+            FetchContent_Declare(
+                netcdf-cxx4
+                GIT_REPOSITORY  "https://github.com/Unidata/netcdf-cxx4.git"
+                GIT_TAG         ${PARSEVAL_NETCDF_CXX4_TAG}
+                GIT_SHALLOW     TRUE
+            )
+            set(NCXX_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
+            FetchContent_MakeAvailable(netcdf-cxx4)
+
+            if(NOT TARGET netCDF::netcdf-cxx4 AND TARGET netcdf-cxx4)
+                add_library(netCDF::netcdf-cxx ALIAS netcdf-cxx4)
+            endif()
+        endif()
+    endif()
+
+    target_link_libraries(parseval PRIVATE netCDF::netcdf-cxx4)
+    target_compile_definitions(parseval PRIVATE PARSEVAL_WITH_NETCDF)
+    list(APPEND PARSEVAL_INSTALLED_DEPENDENCIES "find_dependency(netCDFCxx)")
+endif()
+
+# -------------------------------------------------------------------
+# SIMD kernels (SSE2 /SSE4.1)
+# -------------------------------------------------------------------
+
+if(PARSEVAL_ENABLE_SIMD)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        include(CheckCXXCompilerFlag)
+        check_cxx_compiler_flag("-msse4.1" PARSEVAL_HAS_MSSE41)
+        if(PARSEVAL_HAS_MSSE41)
+            target_compile_options(parseval PRIVATE -msse2 -msse4.1)
+        else()
+            target_compile_options(parseval PRIVATE -msse2)
+        endif()
+    elseif(MSVC)
+        # x86_64 MSVC already target SSE2 by default; /arch: only applies to x86
+        if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+            target_compile_options(parseval PRIVATE /arch:SSE2)
+        endif()
+    endif()
+    target_compile_definitions(parseval PRIVATE PARSEVAL_WITH_SIMD)
 endif()
