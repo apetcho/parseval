@@ -218,13 +218,18 @@ TEST(ArrayDecomposition, DetAndInverse){
     EXPECT_TRUE(identity.is_close(Array::identity(2), 1e-12));
 }
 
-/*
-
-
 TEST(ArrayDecomposition, Diag){
-    //! @todo: implement this
+    Array values({3}, {1.0, 2.0, 3.0});
+    Array matrix = values.diag();
+    EXPECT_EQ(matrix.shape(), Array::Shape({3, 3}));
+    EXPECT_DOUBLE_EQ(matrix(0, 0), 1.0);
+    EXPECT_DOUBLE_EQ(matrix(1, 1), 2.0);
+
+    Array extracted = matrix.diag();
+    EXPECT_TRUE(extracted.is_close(values));
 }
 
+/*
 
 // ==================================================================
 // 6. Functional Primitives & Unary Math
