@@ -118,12 +118,22 @@ TEST(ArrayTest, Slice1D){
     EXPECT_DOUBLE_EQ(slice(2), 6.0);
 }
 
-
-/*
 TEST(ArrayTest, Slice2D){
-    //! @todo: implement this
+    Array matrix({4, 5}, {
+        0.0, 1.0, 2.0, 3.0, 4.0,
+        5.0, 6.0, 7.0, 8.0, 9.0,
+        10.0, 11.0, 12.0, 13.0, 14.0,
+        15.0, 16.0, 17.0, 18.0, 19.0
+    });
+
+    Array slice = matrix.slice(1, 3, 1, 4, 1, 1);   // Rows 1-3, Cols 1-4
+
+    EXPECT_EQ(slice.shape(), Array::Shape({2, 3}));
+    EXPECT_DOUBLE_EQ(slice(0, 0), 6.0);
+    EXPECT_DOUBLE_EQ(slice(1, 2), 13.0);
 }
 
+/*
 
 // ==================================================================
 // 4. Reductions & Trace
