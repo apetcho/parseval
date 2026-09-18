@@ -1955,16 +1955,60 @@ void Array::save_netcdf_multiple(
 }
 
 
+// -
+std::map<std::string, Array> Array::load_netcdf_multiple(const std::string& path){
+    std::map<std::string, Array> result{};
 
-/*
-class Array{
-public:
+    try{
+        netCDF::NcFile ncFile(path, netCDF::NcFile::read);
 
-std::map<std::string, Array> Array::load_netcdf_multiple(const std::string& path);
+        // Get all variables names
+        auto vars = ncFile.getVars();
+        for(const auto& [name, var]: vars){
+            // Get dimensions
+            std::vector<netCDF::NcDim> dims = var.getDims();
+            Array::Shape shape;
+            shape.reserve(dims.size());
+            for(const auto& dim: dims){
+                shape.push_back(static_cast<std::size_t>(dim.getSize()));
+            }
 
-};
+            // Allocate data
+            std::size_t total_size = std::accumulate(
+                shape.begin(), shape.end(),
+                std::size_t{1},
+                std::multiplies<std::size_t>{}
+            );
+            std::vector<Array::value_type> data(total_size);
 
-*/
+            // Read the data
+            var.getVar(data.data());
+
+            // Create the array
+            Array array(std::move(shape), std::move(data));
+
+            // Read attributes
+            auto attrs = var.getAtts();
+            for(const auto& attr: attrs){
+                if(attr.second.getType() == netCDF::ncString){
+                    std::string value;
+                    attr.second.getValues(value);
+                    array.set_attribute(attr.second.getName(), value);
+                }
+            }
+
+            result[name] = std::move(array);
+        }
+
+        ncFile.close();
+    }catch(const netCDF::exceptions::NcException& err){
+        throw ParsevalError(
+            "NetCDF multiple save failed: " + std::string(err.what())
+        );
+    }
+
+    return result;
+}
 
 
 // --------------------------------------------------------------------
