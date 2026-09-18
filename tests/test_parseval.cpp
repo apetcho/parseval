@@ -144,12 +144,15 @@ TEST(ArrayTest, Reductions){
     EXPECT_DOUBLE_EQ(A.max(), 6.0);
 }
 
-
-/*
 TEST(ArrayTest, Trace){
-    //! @todo: implement this
+    Array matrix({3, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    EXPECT_DOUBLE_EQ(matrix.trace(), 15.0); // 1 + 5 + 9
+
+    EXPECT_THROW(matrix.trace(), parseval::ParsevalError); // 1D array
 }
 
+
+/*
 
 // ==================================================================
 // 5. Linear Algebra (Eigen-based)
