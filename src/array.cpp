@@ -15,6 +15,7 @@
 #include<fstream>
 #include<numeric>
 #include<utility>
+#include<random>
 #include<cctype>
 #include<cmath>
 
@@ -138,6 +139,21 @@ Array Array::identity(size_t n){
 // -
 Array Array::full(const Shape& shape, value_type value){
     return Array(shape, value);
+}
+
+// -
+Array Array::random(const Array::Shape& shape){
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_real_distribution<Array::value_type> dist(0.0, 1.0);
+
+    auto result = Array::zeros(shape);
+    auto N = result.size();
+    for(std::size_t i=0; i < N; ++i){
+        result.data()[i] = dist(rng);
+    }
+
+    return result;
 }
 
 // -

@@ -55,6 +55,7 @@ public:
     static Array ones(const Shape& shape);
     static Array identity(size_t n);
     static Array full(const Shape& shape, value_type value);
+    static Array random(const Shape& shape);
     static Array arange(
         value_type start,
         value_type stop,
