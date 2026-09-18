@@ -209,11 +209,17 @@ TEST(ArrayDecomposition, Rank){
     EXPECT_EQ(matrix.rank(), 1);
 }
 
+TEST(ArrayDecomposition, DetAndInverse){
+    Array matrix({2, 2}, {4.0, 7.0, 2.0, 6.0});
+    EXPECT_NEAR(matrix.det(), 10.0, 1e-12);
+
+    Array inv = matrix.inverse();
+    Array identity = matrix.matmul(inv);
+    EXPECT_TRUE(identity.is_close(Array::identity(2), 1e-12));
+}
+
 /*
 
-TEST(ArrayDecomposition, DetAndInverse){
-    //! @todo: implement this
-}
 
 TEST(ArrayDecomposition, Diag){
     //! @todo: implement this
