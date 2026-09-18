@@ -241,12 +241,19 @@ TEST(ArrayFunctional, UnaryMath){
     EXPECT_NEAR(ydata(2), std::sin(std::exp(2.0)), 1e-12);
 }
 
-
-/*
 TEST(ArrayFunctional, MapAndApply){
-    //! @todo: implement this
+    Array xdata({3}, {1.0, 2.0, 3.0});
+    Array ydata = xdata.map([](double x){ return x*x + 1; });
+    EXPECT_DOUBLE_EQ(ydata(0), 2.0);
+    EXPECT_DOUBLE_EQ(ydata(2), 10.0);
+
+    Array zdata = xdata.apply([](double x){ return x > 1.5 ? 1.0 : 0.0; });
+    EXPECT_DOUBLE_EQ(zdata(0), 0.0);
+    EXPECT_DOUBLE_EQ(zdata(2), 1.0);
 }
 
+
+/*
 TEST(ArrayFunctional, AnyAndAll){
     //! @todo: implement this
 }
