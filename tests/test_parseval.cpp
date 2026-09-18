@@ -105,15 +105,21 @@ TEST(ArrayTest, BroadcastDivisionByZero){
 }
 
 
-/*
 // ==================================================================
 // 3. Slicing
 // ==================================================================
 
 TEST(ArrayTest, Slice1D){
-    //! @todo: implement this
+    Array A({10}, {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    Array slice = A.slice(2, 8, 2);     // [2, 4, 6]
+
+    EXPECT_EQ(slice.size(), 3);
+    EXPECT_DOUBLE_EQ(slice(0), 2.0);
+    EXPECT_DOUBLE_EQ(slice(2), 6.0);
 }
 
+
+/*
 TEST(ArrayTest, Slice2D){
     //! @todo: implement this
 }
