@@ -195,12 +195,16 @@ TEST(ArrayDecomposition, Cholesky){
     EXPECT_TRUE(recon.is_close(matrix, 1e-12));
 }
 
-/*
-
 TEST(ArrayDecomposition, Eigen){
-    //! @todo: implement this
+    Array matrix({2, 2}, {2.0, 1.0, 1.0, 2.0});
+    Array vals, vecs;
+    matrix.eigen(vals, vecs);
+
+    EXPECT_EQ(vals.shape(), Array::Shape({2}));
+    EXPECT_EQ(vecs.shape(), Array::Shape(2, 2));
 }
 
+/*
 TEST(ArrayDecomposition, Rank){
     //! @todo: implement this
 }
