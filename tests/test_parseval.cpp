@@ -229,16 +229,20 @@ TEST(ArrayDecomposition, Diag){
     EXPECT_TRUE(extracted.is_close(values));
 }
 
-/*
-
 // ==================================================================
 // 6. Functional Primitives & Unary Math
 // ==================================================================
 
 TEST(ArrayFunctional, UnaryMath){
-    //! @todo: implement this
+    Array xdata({4}, {0.0, 1.0, 2.0, 3.0});
+    Array ydata = xdata.exp().sin();
+
+    EXPECT_NEAR(ydata(0), std::sin(1.0), 1e-12);
+    EXPECT_NEAR(ydata(2), std::sin(std::exp(2.0)), 1e-12);
 }
 
+
+/*
 TEST(ArrayFunctional, MapAndApply){
     //! @todo: implement this
 }
