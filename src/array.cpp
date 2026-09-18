@@ -1820,6 +1820,7 @@ void Array::save_netcdf(
         netCDF::NcVar var = ncFile.addVar(var_name, netCDF::ncDouble, dims);
 
         // Enable compression if requested
+        compression_level = (compression_level > 9) ? 9 : compression_level;
         if(compression_level > 0){
             var.setCompression(shuffle, true, compression_level);
         }
@@ -1885,38 +1886,81 @@ Array Array::load_netcdf(const std::string& path, const std::string& var_name){
     }
 }
 
-/*
-class Array{
-public:
-    using value_type = double;
-    using Shape = std::vector<std::size_t>;
 
-
-    static std::vector<std::size_t> to_netcdf_shape(const Shape& shape){
-        return std::vector<std::size_t>(shape.begin(), shape.end());
-    }
-
-
-
+// -
 void Array::save_netcdf_multiple(
     const std::string& path,
     const std::map<std::string, Array>& variables,
-    int compression_level=0,
-    bool shuffle=true
-) const;
+    int compression_level,
+    bool shuffle
+) const{
+    try{
+        netCDF::NcFile ncFile(path, netCDF::NcFile::replace);
+
+        // First, create all dimensions (shared across variables)
+        std::map<Shape, netCDF::NcDim> dim_cache;   // Cache dimensions by shape
+        // - Map from name to dim (for coordinate variables)
+        std::map<std::string, netCDF::NcDim> named_dims;
+
+        // Pass 1: Create all dimensions needed
+        for(const auto& [name, array]: variables){
+            const Shape& shape = array.shape();
+            // Create a unique dimension name for each axis
+            for(std::size_t i=0; i < shape.size(); ++i){
+                std::string dim_name = name + "_dim_" + std::to_string(i);
+                // Check if dimension already exists
+                if(dim_cache.find(shape) == dim_cache.end()){
+                    netCDF::NcDim dim = ncFile.addDim(dim_name, shape[i]);
+                    dim_cache[shape] = dim;
+                }
+            }
+        }
+
+        // Pass 2: Create variables and write data
+        for(const auto& [name, array]: variables){
+            const Shape& shape = array.shape();
+            std::vector<netCDF::NcDim> dims{};
+
+            // Create dimension list for this variable
+            for(std::size_t i=0; i < shape.size(); ++i){
+                std::string dim_name = name + "_dim_" + std::to_string(i);
+                // Use the cached dimension
+                dims.push_back(dim_cache[shape]);
+            }
+
+            // Add the variable
+            netCDF::NcVar var = ncFile.addVar(name, netCDF::ncDouble, dims);
+
+            // Enable compression if requested
+            compression_level = (compression_level > 9) ? 9 : compression_level;
+            if(compression_level > 0){
+                var.setCompression(shuffle, true, compression_level);
+            }
+
+            // Write the data
+            var.putVar(array.raw_data());
+
+            // Write attributes
+            for(const auto& attr: array.attributes()){
+                var.putAtt(attr.first, attr.second);
+            }
+        }
+
+        ncFile.close();
+    }catch(const netCDF::exceptions::NcException& err){
+        throw ParsevalError(
+            "NetCDF multiple save failed: " + std::string(err.what())
+        );
+    }
+}
+
+
+
+/*
+class Array{
+public:
 
 std::map<std::string, Array> Array::load_netcdf_multiple(const std::string& path);
-
-
-
-private:
-    Shape m_shape;
-    Shape m_strides;
-    std::vector<value_type> m_data;
-    std::map<std::string, std::string> m_attributes; // Key-value pairs for metadata
-
-    static constexpr std::size_t parallel_threshold = 4096;
-
 
 };
 
