@@ -270,12 +270,15 @@ TEST(ArrayIO, TextIO){
     std::remove("test_text.txt");
 }
 
-/*
-
-
 TEST(ArrayIO, BinaryIO){
-    //! @todo: implement this
+    Array matrix({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+    matrix.save_binary("test_binary.bin");
+    Array loaded = Array::load_binary("test_binary.bin");
+    EXPECT_TRUE(matrix.is_close(loaded));
+    std::remove("test_binary.bin");
 }
+
+/*
 
 TEST(ArrayIO, CSVIO){
     //! @todo: implement this
