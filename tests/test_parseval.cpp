@@ -133,16 +133,19 @@ TEST(ArrayTest, Slice2D){
     EXPECT_DOUBLE_EQ(slice(1, 2), 13.0);
 }
 
-/*
-
 // ==================================================================
 // 4. Reductions & Trace
 // ==================================================================
 
 TEST(ArrayTest, Reductions){
-    //! @todo: implement this
+    Array A({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+    EXPECT_DOUBLE_EQ(A.sum(), 21.0);
+    EXPECT_DOUBLE_EQ(A.min(), 1.0);
+    EXPECT_DOUBLE_EQ(A.max(), 6.0);
 }
 
+
+/*
 TEST(ArrayTest, Trace){
     //! @todo: implement this
 }
