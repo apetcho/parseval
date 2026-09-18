@@ -285,13 +285,16 @@ TEST(ArrayIO, CSVIO){
     EXPECT_TRUE(matrix.is_close(loaded));
     std::remove("test.csv");
 }
-/*
 
 TEST(ArrayIO, SQLiteIO){
-    //! @todo: implement this
+    Array matrix({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+    matrix.save_sqlite("test.db", "test_table");
+    Array loaded = Array::load_sqlite("test.db", "test_table");
+    EXPECT_TRUE(matrix.is_close(loaded));
+    std::remove("test.db");
 }
 
-
+/*
 // ==================================================================
 // 8. NetCDF: Attributes, Compression, Multiple Variables, Geospatial
 // ==================================================================
