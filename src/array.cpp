@@ -1,5 +1,6 @@
 #include "parseval/parseval.hpp"
 
+#include<netcdf>
 #include<Eigen/Cholesky>
 #include<Eigen/Eigenvalues>
 #include<Eigen/LU>
@@ -1798,6 +1799,44 @@ const std::map<std::string, std::string>& Array::attributes(void) const{
     return this->m_attributes;
 }
 
+// -
+void Array::save_netcdf(
+    const std::string& path,
+    const std::string& var_name,
+    int compression_level,
+    bool shuffle
+) const {
+    try{
+        netCDF::NcFile ncFile(path, netCDF::NcFile::replace);
+
+        // Create dimensions
+        std::vector<netCDF::NcDim> dims;
+        for(std::size_t i=0; i < this->m_shape.size(); ++i){
+            std::string dim_name = "dim_" + std::to_string(i);
+            dims.push_back(ncFile.addDim(dim_name, this->m_shape[i]));
+        }
+
+        // Add the variable
+        netCDF::NcVar var = ncFile.addVar(var_name, netCDF::ncDouble, dims);
+
+        // Enable compression if requested
+        if(compression_level > 0){
+            var.setCompression(shuffle, true, compression_level);
+        }
+
+        // Write the data
+        var.putVar(this->m_data.data());
+
+        // Write attributes
+        for(const auto& attr: this->m_attributes){
+            var.putAtt(attr.first, attr.second);
+        }
+
+        ncFile.close();
+    }catch(const netCDF::exceptions::NcException& err){
+        throw ParsevalError("NetCDF save failed: " + std::string(err.what()));
+    }
+}
 
 /*
 class Array{
@@ -1810,12 +1849,7 @@ public:
         return std::vector<std::size_t>(shape.begin(), shape.end());
     }
 
-void Array::save_netcdf(
-    const std::string& path,
-    const std::string& var_name="data",
-    int compression_level=0,            // 0 = no compression, 9 = max
-    bool shuffle=true                   // Shuffle filter (improve compression)
-) const;
+
 Array Array::load_netcdf(const std::string& path, const std::string& var_name="data");
 
 void Array::save_netcdf_multiple(
