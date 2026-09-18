@@ -31,15 +31,27 @@ TEST(ArrayTest, BasicCreationAndAccess){
     EXPECT_THROW(arr.at({2, 3}), parseval::ParsevalError);
 }
 
-/*
-
-
 
 TEST(ArrayTest, FactoryMethods){
-    //! @todo: implement this
+    Array zeros = Array::zeros({3, 3});
+    EXPECT_DOUBLE_EQ(zeros(0, 0), 0.0);
+
+    Array ones = Array::ones({2, 2});
+    EXPECT_DOUBLE_EQ(ones(1, 1), 1.0);
+
+    Array full = Array::full({2}, 5.5);
+    EXPECT_DOUBLE_EQ(full(0), 5.5);
+
+    Array arange = Array::arange(0.0, 3.0, 1.0);
+    EXPECT_EQ(arange.size(), 3);
+    EXPECT_DOUBLE_EQ(arange(0), 0.0);
+    EXPECT_DOUBLE_EQ(arange(2), 2.0);
+
+    Array random = Array::random(Array::Shape({2, 2}));
+    EXPECT_LE(random(0, 0), 1.0);
 }
 
-
+/*
 // ==================================================================
 // 2. Elementwise Operations & Broadcasting
 // ==================================================================
