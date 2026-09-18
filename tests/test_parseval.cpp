@@ -252,12 +252,13 @@ TEST(ArrayFunctional, MapAndApply){
     EXPECT_DOUBLE_EQ(zdata(2), 1.0);
 }
 
-
-/*
 TEST(ArrayFunctional, AnyAndAll){
-    //! @todo: implement this
+    Array matrix({2, 3}, {1.0, 0.0, 0.0, 1.0, 1.0, 0.0});
+    EXPECT_TRUE(matrix.all([](double x){ return  x >= 0.0; }));
+    EXPECT_TRUE(matrix.any([](double x){ return x == 0.0; }));
 }
 
+/*
 
 // ==================================================================
 // 7. I/O: Text, Binary, CSV, SQLite
