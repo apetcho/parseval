@@ -51,15 +51,30 @@ TEST(ArrayTest, FactoryMethods){
     EXPECT_LE(random(0, 0), 1.0);
 }
 
-/*
+
 // ==================================================================
 // 2. Elementwise Operations & Broadcasting
 // ==================================================================
 
 TEST(ArrayTest, ElementwiseOperations){
-    //! @todo: implement this
+    Array A({2, 2}, {1.0, 2.0, 3.0, 4.0});
+    Array B({2, 2}, {5.0, 6.0, 7.0, 8.0});
+
+    Array sum = A + B;
+    EXPECT_DOUBLE_EQ(sum(0, 0), 6.0);
+
+    Array diff = A - B;
+    EXPECT_DOUBLE_EQ(diff(0, 0), -4.0);
+
+    Array prod = A * B;
+    EXPECT_DOUBLE_EQ(prod(0, 0), 5.0);
+
+    Array quot = A / B;
+    EXPECT_DOUBLE_EQ(quot(0, 0), 0.2);
 }
 
+
+/*
 TEST(ArrayTest, ScalarOperations){
     //! @todo: implement this
 }
