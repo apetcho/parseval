@@ -85,11 +85,19 @@ TEST(ArrayTest, ScalarOperations){
     EXPECT_DOUBLE_EQ(D(0), 0.5);
 }
 
-/*
-
 TEST(ArrayTest, Broadcasting){
-    //! @todo: implement this
+    // Shape (3, 1) + (1, 4) -> (3, 4)
+    Array A({3, 1}, {1.0, 2.0, 3.0});
+    Array B({1, 4}, {10.0, 20.0, 30.0, 40.0});
+
+    Array C = A + B;
+
+    EXPECT_EQ(C.shape(), Array::Shape({3, 4}));
+    EXPECT_DOUBLE_EQ(C(0, 0), 11.0);
+    EXPECT_DOUBLE_EQ(C(2, 3), 43.0);
 }
+
+/*
 
 TEST(ArrayTest, BroadcastDivisionByZero){
     //! @todo: implement this
