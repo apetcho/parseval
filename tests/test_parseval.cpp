@@ -278,11 +278,14 @@ TEST(ArrayIO, BinaryIO){
     std::remove("test_binary.bin");
 }
 
-/*
-
 TEST(ArrayIO, CSVIO){
-    //! @todo: implement this
+    Array matrix({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+    matrix.save_csv("test.csv");
+    Array loaded = Array::load_csv("test.csv");
+    EXPECT_TRUE(matrix.is_close(loaded));
+    std::remove("test.csv");
 }
+/*
 
 TEST(ArrayIO, SQLiteIO){
     //! @todo: implement this
