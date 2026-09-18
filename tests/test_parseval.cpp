@@ -1,24 +1,39 @@
-
-/*
 #include<gtest/gtest.h>
-#include<cmath>
 #include<fstream>
-#include<map>
 #include<vector>
 
-#include "parserval/parseval.hpp"
+#include<cmath>
+#include<map>
+
+#include "parseval/parseval.hpp"
 
 using parseval::Array;
 using parseval::ThreadPool;
-
 
 // ==================================================================
 // 1. Basic Array Creation & Access
 // ==================================================================
 
 TEST(ArrayTest, BasicCreationAndAccess){
-    //! @todo: implement this
+    // 2x3 array filled with 1.0
+    Array arr({2, 3}, 01.0);
+
+    EXPECT_EQ(arr.ndim(), 2);
+    EXPECT_EQ(arr.shape(), Array::Shape({2, 3}));
+    EXPECT_DOUBLE_EQ(arr(0, 0), 1.0);
+    EXPECT_DOUBLE_EQ(arr(1, 2), 1.0);
+
+    // Modify element
+    arr(0, 1) = 2.5;
+    EXPECT_DOUBLE_EQ(arr(0, 1), 2.5);
+
+    // Safe access with bound checking
+    EXPECT_THROW(arr.at({2, 3}), parseval::ParsevalError);
 }
+
+/*
+
+
 
 TEST(ArrayTest, FactoryMethods){
     //! @todo: implement this
