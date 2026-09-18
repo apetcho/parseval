@@ -204,10 +204,12 @@ TEST(ArrayDecomposition, Eigen){
     EXPECT_EQ(vecs.shape(), Array::Shape(2, 2));
 }
 
-/*
 TEST(ArrayDecomposition, Rank){
-    //! @todo: implement this
+    Array matrix({3, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+    EXPECT_EQ(matrix.rank(), 1);
 }
+
+/*
 
 TEST(ArrayDecomposition, DetAndInverse){
     //! @todo: implement this
