@@ -185,12 +185,17 @@ TEST(ArrayDecomposition, LU){
     EXPECT_EQ(P.shape(), Array::Shape({2, 2}));
 }
 
-/*
-
 TEST(ArrayDecomposition, Cholesky){
-    //! @todo: implement this
+    Array matrix({2, 2}, {4.0, 2.0, 2.0, 3.0});
+
+    Array L = matrix.cholesky();
+
+    // Verify L * L^T = matrix
+    Array recon = L.matmul(L.transpose());
+    EXPECT_TRUE(recon.is_close(matrix, 1e-12));
 }
 
+/*
 
 TEST(ArrayDecomposition, Eigen){
     //! @todo: implement this
