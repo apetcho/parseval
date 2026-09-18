@@ -1838,6 +1838,53 @@ void Array::save_netcdf(
     }
 }
 
+// -
+Array Array::load_netcdf(const std::string& path, const std::string& var_name){
+    try{
+        netCDF::NcFile ncFile(path, netCDF::NcFile::read);
+
+        // Get the variable
+        netCDF::NcVar var = ncFile.getVar(var_name);
+
+        // Get dimensions
+        std::vector<netCDF::NcDim> dims = var.getDims();
+        Array::Shape shape;
+        shape.reserve(dims.size());
+        for(const auto& dim: dims){
+            shape.push_back(static_cast<std::size_t>(dim.getSize()));
+        }
+
+        // Allocate data
+        std::size_t total_size = std::accumulate(
+            shape.begin(), shape.end(),
+            std::size_t{1},
+            std::multiplies<std::size_t>{}
+        );
+
+        std::vector<Array::value_type> data(total_size);
+
+        // Read the data
+        var.getVar(data.data());
+
+        // Create the output array
+        Array result(std::move(shape), std::move(data));
+
+        // Read attributes
+        auto atts = var.getAtts();
+        for(const auto& att: atts){
+            if(att.second.getType() == netCDF::ncString){
+                std::string value;
+                att.second.getValues(value);
+                result.set_attribute(att.second.getName(), value);
+            }
+        }
+
+        return result;
+    }catch(const netCDF::exceptions::NcException& err){
+        throw ParsevalError("NetCDF load failed: " + std::string(err.what()));
+    }
+}
+
 /*
 class Array{
 public:
@@ -1850,7 +1897,6 @@ public:
     }
 
 
-Array Array::load_netcdf(const std::string& path, const std::string& var_name="data");
 
 void Array::save_netcdf_multiple(
     const std::string& path,
