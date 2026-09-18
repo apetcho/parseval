@@ -24,9 +24,6 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(parseval PRIVATE Threads::Threads)
 
-# A place to collect variables that need to be re-derived by anyone
-# consuming an installed copy of this package (see parseval-config.cmake below).
-set(PARSEVAL_INSTALLED_DEPENDENCIES "")
 
 # -------------------------------------------------------------------
 # Eigen3 (required: linear algebra backend) used for matrix decomposition

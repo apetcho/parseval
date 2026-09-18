@@ -71,6 +71,10 @@ set(PARSEVAL_SQLITE3_VERSION    "3.46.1" CACHE STRING "SQLite3 amalgamation vers
 set(PARSEVAL_NETCDF_CXX4_TAG    "v4.3.1" CACHE STRING "netcdf-cxx4 git tag to fetch if not found on the system")
 set(PARSEVAL_GOOGLETEST_VERSION "v1.15.2" CACHE STRING "GoogleTest version to fetch for tests")
 
+# A place to collect variables that need to be re-derived by anyone
+# consuming an installed copy of this package (see parseval-config.cmake below).
+set(PARSEVAL_INSTALLED_DEPENDENCIES "")
+
 
 message(STATUS "Parseval ${PROJECT_VERSION}")
 message(STATUS "  PARSEVAL_BUILD_EXAMPLES     = ${PARSEVAL_BUILD_EXAMPLES}")
@@ -125,4 +129,84 @@ endif()
 # -------------------------------------------------------------------
 if(PARSEVAL_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+
+# -------------------------------------------------------------------
+# Install rules
+# -------------------------------------------------------------------
+#
+# Supports two common personal-use install layouts out of the box:
+#
+#   1) System-wide (needs privileges):
+#       cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+#       cmake --build build
+#       sudo cmake --install build
+#
+#   2) Personal / user-local (no privileges needed, no dependencies
+#      preinstalled anywhere else on the machine):
+#       cmake -S . -B build \
+#           -DCMAKE_INSTALL_PREFIX="$HOME/.local" \
+#           -DPARSEVAL_FETCH_MISSING_DEPS=ON
+#       cmake --build build
+#       cmake --install build
+#   Then, in a downstream project:
+#       find_package(parseval REQUIRED PATHS "$HOME/.local")
+#   or add "$HOME/.local" to CMAKE_PREFIX_PATH.
+
+if(PARSEVAL_ENABLE_INSTALL)
+    set(PARSEVAL_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/parseval")
+
+    install(TARGETS parseval
+        EXPORT parseval-targets
+    )
+
+    install(
+        DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        FILES_MATCHING PATTERN "*.hpp"
+    )
+
+    install(
+        EXPORT parseval-targets
+        FILE parseval-tagets.cmake
+        NAMESPACE parseval::
+        DESTINATION "${PARSEVAL_INSTALL_CMAKEDIR}"
+    )
+
+    # Package version file, so consumers can request a specific version.
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/parseval-config-version.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+
+    # Render the list of find_dependency(...) calls a downstream consumer
+    # needs to re-run for each backend this build had enabled.
+    string(
+        REPLACE ";" "\n"
+        PARSEVAL_INSTALLED_DEPENDECIES_BLOCK
+        "${PARSEVAL_INSTALLED_DEPENDECIES}"
+    )
+    set(PARSEVAL_CONFIG_IN_CONTENT "\
+include(CMakeFindDependencyMacro)
+${PARSEVAL_INSTALLED_DEPENDECIES_BLOCK}
+include(\"\${CMAKE_CURRENT_LIST_DIR}/parseval-targets.cmake\")
+")
+
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/parseval-config.cmake.in" "@PACKAGE_INIT@\n${PARSEVAL_CONFIG_IN_CONTENT}")
+    configure_package_config_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/parseval-config.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/parseval-config.cmake"
+        INSTALL_DESTINATION "${PARSEVAL_INSTALL_CMAKEDIR}"
+    )
+
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/parseval-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/parseval-config-version.cmake"
+        DESTINATION "${PARSEVAL_INSTALL_CMAKEDIR}"
+    )
+
+    # Convenience: print where things landed after `cmake --install`.
+    install(CODE "message(STATUS \"parseval installed under: \${CMAKE_INSTALL_PREFIX}\")")
 endif()
