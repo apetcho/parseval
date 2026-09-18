@@ -81,11 +81,48 @@ message(STATUS "  PARSEVAL_ENABLE_NETCDF      = ${PARSEVAL_ENABLE_NETCDF}")
 message(STATUS "  PARSEVAL_ENABLE_SIMD        = ${PARSEVAL_ENABLE_SIMD}")
 message(STATUS "  PARSEVAL_FETCH_MISSING_DEPS = ${PARSEVAL_FETCH_MISSING_DEPS}")
 
+
+# -------------------------------------------------------------------
+# Helper: find a dependency, or fetch+build it if missing and permitted
+# -------------------------------------------------------------------
+#
+# parseval_required_dependency(<display name> FOUND_VAR <var> FETCH <cmake code>)
+#
+# <cmake code> is only evaluated if the dependency was not found on the system
+# AND PARSEVAL_FETCH_MISSING_DEPS is ON. It is expected to defined the same
+# targets that find_package() would have (e.g. Eigen3::Eigen).
+macro(parseval_warn_or_fail _pkg_name)
+    if(PARSEVAL_FETCH_MISSING_DEPS)
+        message(STATUS "  -> ${_pkg_name} not found on the system; fetching and building it locally instead")
+    else()
+        message(FATAL_ERROR
+            "${pkg_name} was not found on the system.\n"
+            "Either install it (e.g. via your OS package manager) or reconfigure with\n"
+            "   -DPARSEVAL_FETCH_MISSING_DEPS=ON\n"
+            "to let CMake download and build it automatically. This is recommended for\n"
+            "personal/local installs where you don't have (or don't want) system-wide\n"
+            "packages."
+        )
+    endif()
+endmacro()
+
 # -------------------------------------------------------------------
 # Core library target 
 # -------------------------------------------------------------------
 add_subdirectory(src)
 
+
+# -------------------------------------------------------------------
+# Examples
+# -------------------------------------------------------------------
 if(PARSEVAL_BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+
+# -------------------------------------------------------------------
+# Tests (GoogleTest, fetched on demand)
+# -------------------------------------------------------------------
+if(PARSEVAL_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()
