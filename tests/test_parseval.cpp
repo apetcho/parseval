@@ -166,11 +166,16 @@ TEST(ArrayDecompositon, SVD){
     EXPECT_DOUBLE_EQ(S(1), 2.0);
 }
 
-/*
 TEST(ArrayDecomposition, QR){
-    //! @todo: implement this
+    Array matrix({2, 2}, {1.0, 1.0, 1.0, 1.0});
+    Array Q, R;
+    matrix.qr(Q, R);
+
+    EXPECT_EQ(Q.shape(), Array::Shape({2, 2}));
+    EXPECT_EQ(R.shape(), Array::Shape({2, 2}));
 }
 
+/*
 TEST(ArrayDecomposition, LU){
     //! @todo: implement this
 }
