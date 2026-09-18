@@ -258,15 +258,20 @@ TEST(ArrayFunctional, AnyAndAll){
     EXPECT_TRUE(matrix.any([](double x){ return x == 0.0; }));
 }
 
-/*
-
 // ==================================================================
 // 7. I/O: Text, Binary, CSV, SQLite
 // ==================================================================
 
 TEST(ArrayIO, TextIO){
-    //! @todo: implement this
+    Array matrix({2, 3}, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0});
+    matrix.save_text("test_text.txt");
+    Array loaded = Array::load_text("test_text.txt");
+    EXPECT_TRUE(matrix.is_close(loaded));
+    std::remove("test_text.txt");
 }
+
+/*
+
 
 TEST(ArrayIO, BinaryIO){
     //! @todo: implement this
