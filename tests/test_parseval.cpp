@@ -151,17 +151,22 @@ TEST(ArrayTest, Trace){
     EXPECT_THROW(matrix.trace(), parseval::ParsevalError); // 1D array
 }
 
-
-/*
-
 // ==================================================================
 // 5. Linear Algebra (Eigen-based)
 // ==================================================================
 
 TEST(ArrayDecompositon, SVD){
-    //! @todo: implement this
+    Array matrix({2, 2}, {3.0, 0.0, 0.0, 2.0});
+    Array U, S, Vt;
+    matrix.svd(U, S, Vt);
+
+    EXPECT_EQ(U.shape(), Array::Shape({2, 2}));
+    EXPECT_EQ(S.shape(), Array::Shape({2}));
+    EXPECT_DOUBLE_EQ(S(0), 3.0);
+    EXPECT_DOUBLE_EQ(S(1), 2.0);
 }
 
+/*
 TEST(ArrayDecomposition, QR){
     //! @todo: implement this
 }
