@@ -97,13 +97,15 @@ TEST(ArrayTest, Broadcasting){
     EXPECT_DOUBLE_EQ(C(2, 3), 43.0);
 }
 
-/*
-
 TEST(ArrayTest, BroadcastDivisionByZero){
-    //! @todo: implement this
+    Array A({2, 2}, {1.0, 2.0, 3.0, 4.0});
+    Array B({1, 2}, {0.0, 1.0});            // First row is 0
+
+    EXPECT_THROW(A / B, parseval::ParsevalError);
 }
 
 
+/*
 // ==================================================================
 // 3. Slicing
 // ==================================================================
