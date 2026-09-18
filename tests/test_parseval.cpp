@@ -73,11 +73,19 @@ TEST(ArrayTest, ElementwiseOperations){
     EXPECT_DOUBLE_EQ(quot(0, 0), 0.2);
 }
 
+TEST(ArrayTest, ScalarOperations){
+    Array A({3}, {1.0, 2.0, 3.0});
+    Array B = A + 10.0;
+    EXPECT_DOUBLE_EQ(B(0), 11.0);
+
+    Array C = A * 2.0;
+    EXPECT_DOUBLE_EQ(C(2), 6.0);
+
+    Array D = A / 2.0;
+    EXPECT_DOUBLE_EQ(D(0), 0.5);
+}
 
 /*
-TEST(ArrayTest, ScalarOperations){
-    //! @todo: implement this
-}
 
 TEST(ArrayTest, Broadcasting){
     //! @todo: implement this
