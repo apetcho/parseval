@@ -175,10 +175,17 @@ TEST(ArrayDecomposition, QR){
     EXPECT_EQ(R.shape(), Array::Shape({2, 2}));
 }
 
-/*
 TEST(ArrayDecomposition, LU){
-    //! @todo: implement this
+    Array matrix({2, 2}, {4.0, 2.0, 2.0, 1.0});
+    Array L, U, P;
+    matrix.lu(L, U, P);
+
+    EXPECT_EQ(L.shape(), Array::Shape({2, 2}));
+    EXPECT_EQ(U.shape(), Array::Shape({2, 2}));
+    EXPECT_EQ(P.shape(), Array::Shape({2, 2}));
 }
+
+/*
 
 TEST(ArrayDecomposition, Cholesky){
     //! @todo: implement this
